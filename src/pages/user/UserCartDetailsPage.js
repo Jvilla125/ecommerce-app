@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UserCartDetailsPage = () =>{
-    return<p>User Orders page!</p>
+    return<p>User cart details!</p>
 }
 
 export default UserCartDetailsPage;

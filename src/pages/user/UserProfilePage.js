@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UserProfilePage = () =>{
-    return<p>User Orders page!</p>
+    return<p>User profile page!</p>
 }
 
 export default UserProfilePage;
