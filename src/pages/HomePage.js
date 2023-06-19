@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const HomePage = () => {
     return <p>This is a home page</p>
