@@ -1,6 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Components
+import HeaderComponent from './pages/components/HeaderComponent';
+import FooterComponent from './pages/components/FooterComponent';
+
+// user components
+import RoutesWithUserChatComponent from './pages/components/user/RoutesWithUserChatComponent';
+
+// Pages: 
 import HomePage from './pages/HomePage';
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
@@ -30,26 +38,35 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 function App() {
   return (
     <BrowserRouter>
+      <HeaderComponent />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/product-list" element={<ProductListPage />} />
-        <Route path="/product-details" element={<ProductDetailsPage />} />
-        <Route path="/product-details/:id" element={<ProductDetailsPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="*" element="Page not exists 404" />
+        {/* Creating an component that has all routes inside of it */}
+        {/* This will allow users to have the chat component and admin will not have access */}
+        <Route element={<RoutesWithUserChatComponent />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-details" element={<ProductDetailsPage />} />
+          <Route path="/product-details/:id" element={<ProductDetailsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="*" element="Page not exists 404" />
+        </Route>
 
         {/* user protected routes */}
-        <Route element={<ProtectedRoutesComponent />} >
+        {/* pass the admin prop to the ProtectedRoutesComponent */}
+        <Route element={<ProtectedRoutesComponent admin={false} />}  >
           <Route path="/user" element={<UserProfiilePage />} />
           <Route path="/user/my-orders" element={<UserOrdersPage />} />
           <Route path="/user/cart-details" element={<UserCartDetailsPage />} />
           <Route path="/user/order-details" element={<UserOrderDetailsPage />} />
         </Route>
 
+
+
         {/* admin protected routes */}
-        <Route element={<ProtectedRoutesComponent />} >
+        {/* pass the admin prop to the ProtectedRoutesComponent */}
+        <Route element={<ProtectedRoutesComponent admin={true} />} >
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/edit-user" element={<AdminEditUserPage />} />
           <Route path="/admin/products" element={<AdminProductsPage />} />
@@ -62,6 +79,7 @@ function App() {
         </Route>
 
       </Routes>
+      <FooterComponent />
     </BrowserRouter>
   );
 }
