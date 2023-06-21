@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Components
-import HeaderComponent from './pages/components/HeaderComponent';
-import FooterComponent from './pages/components/FooterComponent';
+import HeaderComponent from './components/HeaderComponent';
+import FooterComponent from './components/FooterComponent';
 
 // user components
-import RoutesWithUserChatComponent from './pages/components/user/RoutesWithUserChatComponent';
+import RoutesWithUserChatComponent from './components/user/RoutesWithUserChatComponent';
 
 // Pages: 
 import HomePage from './pages/HomePage';
@@ -17,7 +17,7 @@ import ProductListPage from './pages/ProductListPage';
 import RegisterPage from './pages/RegisterPage';
 
 // Protected user pages:
-import ProtectedRoutesComponent from './pages/components/ProtectedRoutesComponent';
+import ProtectedRoutesComponent from './components/ProtectedRoutesComponent';
 import UserProfiilePage from './pages/user/UserProfilePage';
 import UserOrdersPage from './pages/user/UserOrdersPage';
 import UserOrderDetailsPage from './pages/user/UserOrderDetailsPage';

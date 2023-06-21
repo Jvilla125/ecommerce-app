@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Container } from "react-bootstrap"
-import ProductCarouselComponent from './components/ProductCarouselComponent';
-import CategoryCardComponent from './components/CategoryCardComponent';
+import ProductCarouselComponent from '../components/ProductCarouselComponent';
+import CategoryCardComponent from '../components/CategoryCardComponent';
 
 const HomePage = () => {
     const categories = ["Tablets", "Monitors", "Games", "Printers", "Software", "Cameras", "Books", "Videos"];
