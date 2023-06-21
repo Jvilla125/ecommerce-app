@@ -1,7 +1,15 @@
 import React from 'react';
 
+import ProductCarouselComponent from './components/ProductCarouselComponent';
+import CategoryCardComponent from './components/CategoryCardComponent';
+
 const HomePage = () => {
-    return <p>This is a home page!!</p>
+    return (
+        <>
+        <ProductCarouselComponent/>
+        <CategoryCardComponent/>
+        </>
+    )
 }
 
 export default HomePage;
