@@ -1,3 +1,6 @@
+import React from 'react';
+import { RatingView } from 'react-simple-star-rating';
+
 import { Card, Button } from "react-bootstrap";
 
 const ProductForListComponent = () => {
