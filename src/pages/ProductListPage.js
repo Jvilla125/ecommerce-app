@@ -18,7 +18,7 @@ const ProductListPage = () => {
                 <Col md={3}>
                     <ListGroup variant="flush">
                         <ListGroup.Item className='mb-3 mt-3'><SortOptionsComponent /></ListGroup.Item>
-                        <ListGroup.Item> FILTER: <br/> <PriceFilterComponent /></ListGroup.Item>
+                        <ListGroup.Item> FILTER: <br /> <PriceFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><RatingFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><CategoryFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><AttributesFilterComponent /></ListGroup.Item>
@@ -29,7 +29,14 @@ const ProductListPage = () => {
                     </ListGroup>
                 </Col>
                 <Col md={9}>
-                    <ProductForListComponent />
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                        <ProductForListComponent
+                            key={idx} images={["games", "monitors", "tablets",
+                                "games", "monitors"]}
+                            idx={idx}
+                        />
+                    ))}
+
                     <PaginationComponent />
                 </Col>
             </Row>
