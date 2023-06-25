@@ -34,10 +34,14 @@ import AdminEditProductPage from './pages/admin/AdminEditProductPage';
 import AdminOrderDetailsPage from './pages/admin/AdminOrderDetailsPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 
+// Util
+import ScrollToTop from './utils/ScrollToTop';
 
 function App() {
   return (
     <BrowserRouter>
+    {/* Importing ScrollToTop to be included in all of the pages */}
+    <ScrollToTop />
       <HeaderComponent />
       <Routes>
         {/* Creating an component that has all routes inside of it */}
