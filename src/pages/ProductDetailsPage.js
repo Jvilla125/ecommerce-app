@@ -21,13 +21,16 @@ const ProductDetailsPage = () => {
                         <Col md={8}>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
-                                    Example
+                                    <h1>Product name</h1>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Rating readonly size={20} initialValue={4} />(1)
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    Example 2
+                                    Price: 
+                                    <span className='fw-bold'>
+                                        $345
+                                    </span>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     Example 3
@@ -37,24 +40,28 @@ const ProductDetailsPage = () => {
                         <Col md={4}>
                             <ListGroup>
                                 <ListGroup.Item>
-                                    example 1
+                                    Status: in stock
                                 </ListGroup.Item>
-                                <ListGroup.Item>Example 2</ListGroup.Item>
+                                <ListGroup.Item>Price:
+                                    <span className='fw-bold'>
+                                        $345
+                                    </span>
+                                </ListGroup.Item>
                                 <ListGroup.Item>
-                                <Form.Select size="lg" aria-label="Default select example">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Select>
+                                    Quantity: 
+                                    <Form.Select size="lg" aria-label="Default select example">
+                                        <option>1</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </Form.Select>
                                 </ListGroup.Item>
                                 <ListGroup>
                                     <ListGroup.Item>
                                         <Button variant="danger">
-                                            Danger
+                                            Add to cart
                                         </Button>
                                     </ListGroup.Item>
-                                    <ListGroup.Item>Example 3</ListGroup.Item>
                                 </ListGroup>
                             </ListGroup>
                             Product Status, quantity

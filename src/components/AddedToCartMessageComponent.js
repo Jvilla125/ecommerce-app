@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Alert, Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom';
 
 const AddedToCartMessageComponent = () => {
     const [show, setShow] = useState(true);
     return (
         <>
-            <Alert show={show} variant="danger" 
-            onClose={() => setShow(false)} dismissible>
-                <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+            <Alert show={show} variant="success"
+                onClose={() => setShow(false)} dismissible>
+                <Alert.Heading>The product was added to your cart!</Alert.Heading>
                 <p>
-                    Change this and that and try again. Duis mollis, est non commodo
-                    luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
-                    Cras mattis consectetur purus sit amet fermentum.
+                    <Button variant='success'>Go back</Button>{" "} 
+                    <Link to="/cart">
+                        <Button variant='danger'>
+                            Go to cart
+                        </Button>
+                    </Link>
                 </p>
             </Alert>
         </>
