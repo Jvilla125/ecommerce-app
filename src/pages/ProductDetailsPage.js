@@ -1,20 +1,44 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Row, Col, Container, Image, ListGroup, Form, Button, Alert } from "react-bootstrap"
 import AddedToCartMessageComponent from '../components/AddedToCartMessageComponent';
 import { Rating } from 'react-simple-star-rating';
+import ImageZoom from 'js-image-zoom';
 
 const ProductDetailsPage = () => {
+    var options ={
+        scale: 2,
+        offset: {vertical: 0, horizontal: 10}
+    }
+    useEffect(() => {
+        new ImageZoom(document.getElementById('first'), options)
+        new ImageZoom(document.getElementById('second'), options)
+        new ImageZoom(document.getElementById('third'), options)
+        new ImageZoom(document.getElementById('fourth'), options)
+    })
+
     return (
         <Container>
             <AddedToCartMessageComponent />
             <Row className="mt-5">
                 {/* Bootstrap has a total of 12 columns */}
                 {/* We are separating the columns into 4 and 8 */}
-                <Col md={4}>
-                    <Image fluid src="/images/games-category.png" />
-                    <Image fluid src="/images/monitors-category.png" />
-                    <Image fluid src="/images/tablets-category.png" />
-                    <Image fluid src="/images/games-category.png" />
+                <Col style={{zIndex: 1}} md={4}>
+                    <div id='first'>
+                        <Image crossOrigin='anonymous' fluid src="/images/games-category.png" />
+                    </div>
+                    <br />
+                    <div id='second'>
+                        <Image fluid src="/images/monitors-category.png" />
+                    </div>
+                    <br />
+                    <div id='third'>
+                        <Image fluid src="/images/tablets-category.png" />
+                    </div>
+                    <br />
+                    <div id='fourth'>
+                        <Image fluid src="/images/games-category.png" />
+                    </div>
+                    <br />
                 </Col>
                 <Col md={8}>
                     <Row>
@@ -27,7 +51,7 @@ const ProductDetailsPage = () => {
                                     <Rating readonly size={20} initialValue={4} />(1)
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    Price: 
+                                    Price:
                                     <span className='fw-bold'>
                                         $345
                                     </span>
@@ -48,7 +72,7 @@ const ProductDetailsPage = () => {
                                     </span>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    Quantity: 
+                                    Quantity:
                                     <Form.Select size="lg" aria-label="Default select example">
                                         <option>1</option>
                                         <option value="1">1</option>
@@ -71,12 +95,15 @@ const ProductDetailsPage = () => {
                         <Col className='mt-5'>
                             <h5>Reviews</h5>
                             <ListGroup variant='flush'>
-                                <ListGroup.Item>
-                                    Example 1
-                                </ListGroup.Item>
-                                <ListGroup.Item> Example 2</ListGroup.Item>
-                                <ListGroup.Item> Example 3</ListGroup.Item>
-                                <ListGroup.Item> Example 4</ListGroup.Item>
+                                {Array.from({ length: 10 }).map((item, idx) => (
+                                    <ListGroup.Item key={idx}>
+                                        John Doe <br />
+                                        <Rating readonly size={20} initialValue={4} />
+                                        <br />
+                                        Date: <br />
+                                        This is the review
+                                    </ListGroup.Item>
+                                ))}
                             </ListGroup>
                         </Col>
                     </Row>
@@ -85,23 +112,18 @@ const ProductDetailsPage = () => {
                     <Alert variant="danger">Login first to write a review</Alert>
                     <Form>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control type="email" placeholder="name@example.com" />
-                        </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="exampleForm.ControlTextarea1"
-                        >
-                            <Form.Label>Example textarea</Form.Label>
+                            <Form.Label>Write a review</Form.Label>
                             <Form.Control as="textarea" rows={3} />
                         </Form.Group>
                         <Form.Select aria-label="Default select example">
-                            <option>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                            <option>Your rating</option>
+                            <option value="5">(very good)</option>
+                            <option value="4">(good)</option>
+                            <option value="3">(average)</option>
+                            <option value="2">(bad)</option>
+                            <option value="1">(awful)</option>
                         </Form.Select>
-                        <Button variant="primary">Primary</Button>
+                        <Button className='mb-3 mt-3' variant="primary">Submit</Button>
                     </Form>
                 </Col>
             </Row>

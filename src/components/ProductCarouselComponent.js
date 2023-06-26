@@ -10,7 +10,7 @@ const ProductCarouselComponent = () => {
         <Carousel>
             <Carousel.Item>
                 <img
-                    crossorigin="anonymous"
+                    crossOrigin="anonymous"
                     className="d-block w-100"
                     // objectFit fixes the ratio of the image to fit the height 
                     style={{ height: "300px", objectFit: "cover" }}
