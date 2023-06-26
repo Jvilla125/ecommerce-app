@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
 // Import /filterQueryResultsOptions/Components
 import PriceFilterComponent from "../components/filterQueryResultOptions/PriceFilterComponent";
