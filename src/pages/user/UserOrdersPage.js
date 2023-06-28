@@ -31,12 +31,9 @@ const UserOrdersPage = () => {
                                 <td><Link to="/user/order-details"> Go to order</Link></td>
                             </tr>
                         ))}
-
-
                     </tbody>
                 </Table>
             </Col>
-
         </Row>
     )
 }
