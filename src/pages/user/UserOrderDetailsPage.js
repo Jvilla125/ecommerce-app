@@ -71,10 +71,8 @@ const UserOrderDetailsPage = () => {
                                     Pay for the order
                                 </Button>
                             </div>
-
                         </ListGroup.Item>
                     </ListGroup>
-
                 </Col>
             </Row>
         </Container>

@@ -20,7 +20,7 @@ const AdminOrdersPage = () => {
                             <th>Date</th>
                             <th>Total</th>
                             <th>Delivered</th>
-                            <th>Payment mthod</th>
+                            <th>Payment method</th>
                             <th>Order Details</th>
                         </tr>
                     </thead>
