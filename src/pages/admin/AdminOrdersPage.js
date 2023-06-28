@@ -1,13 +1,14 @@
 import React from 'react';
 import { Table, Row, Col } from 'react-bootstrap';
 import {Link} from 'react-router-dom'
+import AdminLinksComponents from '../../components/admin/AdminLinksComponents';
 
 const AdminOrdersPage = () => {
     return(
 
         <Row className="m-5">
             <Col md={2}>
-                admin links
+                <AdminLinksComponents/>
             </Col>
             <Col md={10}>
                 <h1>Orders</h1>
