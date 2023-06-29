@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, FormGroup, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const AdminCreateProductPage = () => {
 
-    const [validated, setValidated] = useState(false); 
+    const [validated, setValidated] = useState(false);
 
     const handleSubmit = (event) => {
         const form = event.currentTarget;
-        if (form.checkValidity() === false){ 
+        if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
@@ -43,7 +43,10 @@ const AdminCreateProductPage = () => {
                             <Form.Control name='price' required type='text' />
                         </FormGroup>
                         <FormGroup className='mb-3' controlId='formBasicCategory'>
-                            <Form.Label>Category</Form.Label>
+                            <Form.Label>
+                                Category
+                                <CloseButton />(<small>remove selected</small>)
+                            </Form.Label>
                             <Form.Select required name="category" aria-label="Default select example">
                                 <option value="">Choose Category</option>
                                 <option value="1">Laptops</option>
@@ -51,9 +54,74 @@ const AdminCreateProductPage = () => {
                                 <option value="3">Games</option>
                             </Form.Select>
                         </FormGroup>
+                        <Row className='mt-5'>
+                            <Col md={6}>
+                                <Form.Group className='mb-3' controlId="formBasicAttributes">
+                                    <Form.Label>Choose attribute and set value</Form.Label>
+                                    <Form.Select name="atrrKey" aria-label="Default select example">
+                                        <option>Choose attribute</option>
+                                        <option value="red">color</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col >
+                            <Col md={6}>
+                            <Form.Group className='mb-3' controlId="formBasicAttributeValue">
+                                    <Form.Label>Attribute value</Form.Label>
+                                    <Form.Select name="atrrKey" aria-label="Default select example">
+                                        <option>Choose attribute value</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Table hover>
+                                <thead>
+                                    <tr>
+                                        <th>Attribute</th>
+                                        <th>Value</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>attr key</td>
+                                        <td>atrr value</td>
+                                        <td><CloseButton/></td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className='mb-3' controlId="formBasicNewAttribute">
+                                    <Form.Label> Create new attribute </Form.Label>
+                                        <Form.Control
+                                        disabled={false}
+                                        placeholder='first choose or create category'
+                                        name='newAttrValue'
+                                        type='text'
+                                        />
+                                </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                            <Form.Group className='mb-3' controlId="formBasicNewAttributeValue">
+                                    <Form.Label> Attribute value</Form.Label>
+                                        <Form.Control
+                                        disabled={false}
+                                        required={true}
+                                        placeholder='first choose or create category'
+                                        name='newAttrValue'
+                                        type='text'
+                                        />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Alert variant='primary'>
+                            After typing attribute key and value press enter on one of the field
+                        </Alert>
                         <FormGroup controlId='formFileMultiple' className='mb-3 mt-3'>
                             <Form.Label>Images</Form.Label>
-                            <Form.Control required type="file" multiple/>
+                            <Form.Control required type="file" multiple />
                         </FormGroup>
                         <Button variant='primary' type="submit">
                             Create
