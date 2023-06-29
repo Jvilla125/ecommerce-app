@@ -63,8 +63,14 @@ const productSchema = mongoose.Schema({
     timestamps: true,
 })
 
-productSchema.index()
-
 const Product = mongoose.model("Product", productSchema)
+
+// When using the search bar, the search engine will look into the name and description 
+// field to return result from mongodb
+// These are called Compound indexes
+productSchema.index({name: 'text', description: 'text'}, {name: 'TextIndex'})
+// Mongodb will organize key from A-Z by using 1
+// if we use -1, it will be Z-A
+productSchema.index({"attrs.key": 1, "attrs.value": 1 })
 
 module.exports = Product
