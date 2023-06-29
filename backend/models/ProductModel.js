@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
+const Review = require('./ReviewModel')
 
+// Define imageSchema below instead of creating a new file
+const imageSchema = mongoose.Schema({
+    path: { type: String, required: true }
+})
 // How data is going to be stored in mongoose
 // Schema is the definition of the property
 const productSchema = mongoose.Schema({
@@ -42,8 +47,15 @@ const productSchema = mongoose.Schema({
         { key: { type: String }, value: { type: String } }
     ],
     // we can have many images and many reviews
-    images: [],
-    reviews: [],
+    images: [imageSchema],
+    // We use reference because reviews are being stored in a different model
+    // Using mongoose.Schema.Types.ObjectId to reference using reviews ID
+    reviews: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: Review,
+        }
+    ],
 
 }, {
     // When we save products in the database
