@@ -5,7 +5,6 @@ import AdminLinksComponents from '../../components/admin/AdminLinksComponents';
 
 const AdminOrdersPage = () => {
     return(
-
         <Row className="m-5">
             <Col md={2}>
                 <AdminLinksComponents/>

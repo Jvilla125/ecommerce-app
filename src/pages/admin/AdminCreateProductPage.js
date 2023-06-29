@@ -54,6 +54,12 @@ const AdminCreateProductPage = () => {
                                 <option value="3">Games</option>
                             </Form.Select>
                         </FormGroup>
+                        <Form.Group className="mb-3" controlId="formBasicNewCategory">
+                            <Form.Label>
+                                Or create a new category (e.g. Computers/Laptops/Intel){" "}
+                            </Form.Label>
+                            <Form.Control name="newCategory" type="text" />
+                        </Form.Group>
                         <Row className='mt-5'>
                             <Col md={6}>
                                 <Form.Group className='mb-3' controlId="formBasicAttributes">
@@ -65,7 +71,7 @@ const AdminCreateProductPage = () => {
                                 </Form.Group>
                             </Col >
                             <Col md={6}>
-                            <Form.Group className='mb-3' controlId="formBasicAttributeValue">
+                                <Form.Group className='mb-3' controlId="formBasicAttributeValue">
                                     <Form.Label>Attribute value</Form.Label>
                                     <Form.Select name="atrrKey" aria-label="Default select example">
                                         <option>Choose attribute value</option>
@@ -86,7 +92,7 @@ const AdminCreateProductPage = () => {
                                     <tr>
                                         <td>attr key</td>
                                         <td>atrr value</td>
-                                        <td><CloseButton/></td>
+                                        <td><CloseButton /></td>
                                     </tr>
                                 </tbody>
                             </Table>
@@ -95,24 +101,24 @@ const AdminCreateProductPage = () => {
                             <Col md={6}>
                                 <Form.Group className='mb-3' controlId="formBasicNewAttribute">
                                     <Form.Label> Create new attribute </Form.Label>
-                                        <Form.Control
+                                    <Form.Control
                                         disabled={false}
                                         placeholder='first choose or create category'
                                         name='newAttrValue'
                                         type='text'
-                                        />
+                                    />
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                            <Form.Group className='mb-3' controlId="formBasicNewAttributeValue">
+                                <Form.Group className='mb-3' controlId="formBasicNewAttributeValue">
                                     <Form.Label> Attribute value</Form.Label>
-                                        <Form.Control
+                                    <Form.Control
                                         disabled={false}
                                         required={true}
                                         placeholder='first choose or create category'
                                         name='newAttrValue'
                                         type='text'
-                                        />
+                                    />
                                 </Form.Group>
                             </Col>
                         </Row>
