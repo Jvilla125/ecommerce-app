@@ -1,20 +1,19 @@
-
 const express = require('express')
 const app = express()
 const port = 3000
-
 const apiRoutes = require('./routes/apiRoutes');
+
+// mongodb connection
+const connectDB = require('./config/db')
+connectDB();
 
 // This is called Middleware
 // app.get('/') handles http request from the user 
 // app.get takes two arguments, "/" routing and (req,res) that handles the path
 // request and response
-app.get('/', (req, res) => {
+app.get('/', async (req, res, next) => {
     res.json({message: "API running..."})
 })
-// mongodb connection
-const connectDB = require('./config/db')
-connectDB();
 
 // if URL starts with /api, then it is handled with apiRoutes.js
 app.use('/api', apiRoutes)
@@ -30,7 +29,6 @@ app.use((error, req, res, next) => {
         stack: error.stack
     })
 })
-
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
