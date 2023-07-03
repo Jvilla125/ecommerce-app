@@ -1,20 +1,46 @@
-const connectDB = require('../config/db');
-connectDB();
+const connectDB = require("../config/db")
+connectDB()
 
-const categoryData = require('./catergories')
-const Category = require('../models/CategoryModel')
+const categoryData = require("./categories")
+const productData = require("./products")
+const reviewData = require("./reviews")
+const userData = require('./users')
+
+const Category = require("../models/CategoryModel")
+const Product = require("../models/ProductModel")
+const Review = require("../models/ReviewModel")
+const User = require('../models/UserModel')
 
 const importData = async () => {
     try {
-        // Delete all categories from existing categories
-        await Category.collection.deleteMany({});
-        await Category.insertMany(categoryData);
-        console.log("Seeder data proceeded succsesfully")
+        await Category.collection.dropIndexes()
+        await Product.collection.dropIndexes()
+
+        await Category.collection.deleteMany({})
+        await Product.collection.deleteMany({})
+        await Review.collection.deleteMany({})
+        await User.collection.deleteMany({})
+
+        await Category.insertMany(categoryData)
+        const reviews = await Review.insertMany(reviewData)
+        // Going to map through the productData and push the review from line 23 to 
+        // products array in product.js
+        const sampleProducts = productData.map((product) => {
+            reviews.map((review) => {
+                product.reviews.push(review._id)
+            })
+            
+            return {...product}
+        });
+        
+        await Product.insertMany(sampleProducts)
+        await User.insertMany(userData);
+        
+        console.log("Seeder data proceeded successfully")
         process.exit()
-    } catch (error){
-        console.error("Error while processing seeder data", error);
-        process.exit(1)
+    } catch (error) {
+        console.error("Error while proccessing seeder data", error)
+        process.exit(1);
     }
 }
-
-importData();
+importData()

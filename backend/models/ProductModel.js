@@ -69,6 +69,7 @@ const Product = mongoose.model("Product", productSchema)
 // field to return result from mongodb
 // These are called Compound indexes
 productSchema.index({name: 'text', description: 'text'}, {name: 'TextIndex'})
+
 // Mongodb will organize key from A-Z by using 1
 // if we use -1, it will be Z-A
 productSchema.index({"attrs.key": 1, "attrs.value": 1 })
