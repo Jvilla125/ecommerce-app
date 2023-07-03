@@ -18,6 +18,9 @@ const categorySchema = mongoose.Schema({
     ]
 });
 
+// Mongodb will organize in ascending order VVV
+categorySchema.index({description: 1})
+
 const Category = mongoose.model("Category", categorySchema)
 
 module.exports = Category;
