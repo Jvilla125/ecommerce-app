@@ -7,6 +7,7 @@ const getProducts = async (req, res, next) => {
         let query = {}
         let queryCondition = false;
 
+        // filtering by price
         let priceQueryCondition = {}
         if (req.query.price) {
             queryCondition = true;
@@ -14,6 +15,7 @@ const getProducts = async (req, res, next) => {
             priceQueryCondition = { price: { $lte: Number(req.query.price) } }
         }
 
+        // filtering by rating
         let ratingQueryCondition = {}
         if (req.query.rating) {
             queryCondition = true;
@@ -23,20 +25,51 @@ const getProducts = async (req, res, next) => {
 
         let categoryQueryCondition = {}
         const categoryName = req.params.categoryName || "";
-        if(categoryName){
+        if (categoryName) {
             queryCondition = true;
             let a = categoryName.replaceAll(',', "/")
             var regEx = new RegExp("^" + a)
-            categoryQueryCondition = {category: regEx}
+            categoryQueryCondition = { category: regEx }
         }
 
-        if (queryCondition){
-            query = {
-                $and: [priceQueryCondition, ratingQueryCondition, categoryQueryCondition]
+        // filtering search by category
+        if (req.query.category) {
+            queryCondition = true
+            let a = req.query.category.split(",").map((item) => {
+                if (item) return new RegExp("^", item)
+            })
+            categoryQueryCondition = {
+                category: { $in: a }
             }
         }
-        
 
+        // filtering by attributes 
+        let attrsQueryCondition = []
+        if (req.query.attrs) {
+
+            // req.query.attrs.split(",") will result in ['RAM-1TB-2TB-4TB', 'Color-blue-red']
+            attrsQueryCondition = req.query.attrs.split(",").reduce((acc, item) => {
+                if (item) {
+                    // item.split("-") will result in ['RAM', '1TB', '2TB', '4TB'],['color', 'blue', 'red']
+                    let a = item.split("-")
+                    let values = [...a]
+                    values.shift() // removes first item in a on line 54 -> ['1TB', '2TB', '4TB'],['blue', 'red']
+                    let a1 = {
+                        attrs: {
+                            $elemMatch: {
+                                key: a[0],
+                                value: { $in: values }
+                            }
+                        }
+                    }
+                    acc.push(a1)
+                    return acc
+                } else return acc
+            }, [])
+            queryCondition = true;
+        }
+
+        // pagination
         const pageNum = Number(req.query.pageNum) || 1;
 
         // sort by name, price, customer rating
@@ -53,12 +86,40 @@ const getProducts = async (req, res, next) => {
             console.log(sort)
         }
 
+        // Defining a search query
+        // req.params.searchQuery is from productRoutes.js line 7 :searchQuery
+        // "/category/:categoryName/search/:searchQuery"
+        const searchQuery = req.params.searchQuery || ""
+        let searchQueryCondition = {}
+        let select = {}
+        // if there is a searchQuery from the user then we define queryCondition true 
+        if (searchQuery) {
+            queryCondition = true;
+            searchQueryCondition = { $text: { $search: searchQuery } }
+            select = {
+                score: { $meta: "textScore" } // represents accuracy of search results from search query
+            }
+            sort = { score: { $meta: "textScore" } }
+        }
+
+        if (queryCondition) {
+            query = {
+                $and: [
+                    priceQueryCondition,
+                    ratingQueryCondition,
+                    categoryQueryCondition,
+                    searchQueryCondition,
+                    ...attrsQueryCondition
+                ]
+            }
+        }
+
         // find all products by using .find({})
         // .sort({name: 1}) means products will be sorted in ascending order 
         // .limit(1) reduces the amount of products being returned
-
         const totalProducts = await Product.countDocuments(query)
         const products = await Product.find(query)
+            .select(select) // use select to exclude fields from search
             .skip(recordsPerPage * (pageNum - 1))
             .sort(sort)
             .limit(recordsPerPage)
