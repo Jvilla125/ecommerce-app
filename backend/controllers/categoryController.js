@@ -11,10 +11,39 @@ const getCategories = async (req, res, next) => {
         // .orFail() means that if there are no categories in the Database, an error will be thrown
         //response is the json of categories
         res.json(categories)
-        
+
     } catch (error) {
         next(error)
     }
 }
 
-module.exports = getCategories
+const newCategory = async (req, res, next) => {
+    try {
+        const { category } = req.body;
+        if (!category) {
+            res.status(400).send("Category input is required!")
+        }
+        // findOne means we are looking based on the name of category
+        const categoryExists = await Category.findOne({ name: category })
+        // if the name of a category exists a user error 400 will be sent back
+        if (categoryExists) {
+            res.status(400).send("Category already exists");
+        } else {
+            // if a category does not exist, we will create one in the database 
+            const categoryCreated = await Category.create({
+                name: category
+            })
+            // after a category is successfully created, the user will the json information of that 
+            // new category
+            res.status(201).send({ categoryCreated: categoryCreated })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+module.exports = {
+    getCategories,
+    newCategory
+}
