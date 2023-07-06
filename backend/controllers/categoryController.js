@@ -42,8 +42,25 @@ const newCategory = async (req, res, next) => {
     }
 }
 
+const deleteCategory = async (req, res, next) => {
+    // req.params gets id of category
+    // return res.send(req.params.category)
+    try {
+        if (req.params.category !== "Choose category") {
+            const categoryExists = await Category.findOne({
+                name: decodeURIComponent(req.params.category)
+            }).orFail()
+            await categoryExists.remove()
+            res.json({ categoryDeleted: true })
+        }
+    } catch (error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     getCategories,
-    newCategory
+    newCategory,
+    deleteCategory
 }
