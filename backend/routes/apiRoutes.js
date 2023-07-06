@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express()
 
-const productRoutes = require('./productRoutes')
+const productRoutes = require('./productRoutes');
+const categoryRoutes = require('./categoryRoutes');
+const userRoutes = require('./userRoutes');
+const orderRoutes = require('./orderRoutes');
 
 // from server.js if the URL first part is /api and second is /products
 // /api/products, then it is handled to productRoutes.js
