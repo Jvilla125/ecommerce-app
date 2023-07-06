@@ -161,8 +161,86 @@ const getBestSellers = async (req, res, next) => {
     }
 }
 
+// admin functions: 
+const adminGetProducts = async (req, res, next) => {
+    try {
+        const products = await Product.find({})
+            .sort({ category: 1 })
+            .select('name price category');
+
+        return res.json(products)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminDeleteProduct = async (req, res, next) => {
+    try {
+        // req.params.id is from productRoutes.js line 16 "/admin/:id"
+        const product = await Product.findById(req.params.id).orFail();
+        await product.remove()
+        res.json({ message: 'product removed' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminCreateProduct = async (req, res, next) => {
+    try {
+        const product = new Product()
+        const { name, description, count, price, category, attributesTable } = req.body;
+        product.name = name;
+        product.description = description;
+        product.count = count;
+        product.price = price;
+        product.category = category;
+        if (attributesTable.length > 0) {
+            attributesTable.map((item) => {
+                product.attrs.push(item) // bc attrs is an array in the model
+            })
+        }
+        await product.save()
+        res.json({
+            message: "product created",
+            productId: product._id
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminUpdateProduct = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id).orFail() // if there is not product with id then throw error
+        const { name, description, count, price, category, attributesTable } = req.body;
+        product.name = name || product.name;
+        product.description = description || product.description;
+        product.count = count || product.count;
+        product.price = price || product.price;
+        product.category = category || product.category;
+        if (attributesTable.length > 0) {
+            product.attrs = [];
+            attributesTable.map((item) => {
+                product.attrs.push(item)
+            })
+        } else {
+            product.attrs = []
+        }
+        await product.save()
+        res.json({
+            message: "product updated"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getProducts,
     getProductsById,
-    getBestSellers
+    getBestSellers,
+    adminGetProducts,
+    adminDeleteProduct,
+    adminCreateProduct,
+    adminUpdateProduct
 }
