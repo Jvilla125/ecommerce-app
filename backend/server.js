@@ -1,7 +1,10 @@
 const express = require('express')
+const fileUpload = require("express-fileupload") // used npm i express-fileupload in order to upload file images
 const app = express()
 const port = 3000
+
 app.use(express.json())
+app.use(fileUpload()) // used npm i express-fileupload in order to upload file images
 
 const apiRoutes = require('./routes/apiRoutes');
 
