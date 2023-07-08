@@ -236,23 +236,46 @@ const adminUpdateProduct = async (req, res, next) => {
     }
 }
 
-const adminUpload = async (req, res, next ) =>{
+const adminUpload = async (req, res, next) => {
     try {
-        if(!req.files || !! req.files.images === false){
+        if (!req.files || !!req.files.images === false) {
             return res.status(400).send("No files were uploaded.")
         }
 
         const validateResult = imageValidate(req.files.images)
-        if (validateResult.error){
+        if (validateResult.error) {
             return res.status(400).send(validateResult.error)
         }
 
+        const path = require("path")
+        const { v4: uuidv4 } = require("uuid") //npm install uuid to generate random string for file name
+        const uploadDirectory = path.resolve(__dirname, "../../frontend", "public", "images", "products") //dirname points to directory productController is in
+
+        let product = await Product.findById(req.query.productId).orFail()
+
+        let imagesTable = []
+
         if (Array.isArray(req.files.images)) {
-            res.send("You sent " + req.files.images.length + " images")
+            imagesTable = req.files.images
         } else {
-            res.send("You sent only one image")
+            imagesTable.push(req.files.images)
         }
-    } catch(error){
+
+        for (let image of imagesTable) {            
+            var fileName = uuidv4() + path.extname(image.name)
+            var uploadPath = uploadDirectory + "/" + fileName
+            product.images.push({path: "/images/products/" + fileName})
+            image.mv(uploadPath, function (err) {
+                if (err) {
+                    return res.status(500).send(err) //500 is server error
+                }
+            })
+        }
+        await product.save()
+        
+        return res.send("Files uploaded!")
+
+    } catch (error) {
         next(error)
     }
 }
