@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { getProducts, getProductsById, getBestSellers,
-    adminGetProducts, adminDeleteProduct, adminCreateProduct, adminUpdateProduct, adminUpload } = require("../controllers/productController")
+    adminGetProducts, adminDeleteProduct, adminCreateProduct,
+    adminUpdateProduct, adminUpload, adminDeleteProductImage } = require("../controllers/productController")
 
 // The URL is /api/products and the response to the user will be the following:
 // handler in the routes will be handled in controller (separate file)
@@ -15,6 +16,7 @@ router.get("/get-one/:id", getProductsById);
 // admin routes:
 router.get("/admin", adminGetProducts);
 router.delete("/admin/:id", adminDeleteProduct)
+router.delete("/admin/image/:imagePath/:productId", adminDeleteProductImage)
 router.put("/admin/:id", adminUpdateProduct)
 router.post("/admin/upload", adminUpload)
 router.post("/admin", adminCreateProduct)

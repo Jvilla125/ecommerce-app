@@ -261,10 +261,10 @@ const adminUpload = async (req, res, next) => {
             imagesTable.push(req.files.images)
         }
 
-        for (let image of imagesTable) {            
+        for (let image of imagesTable) {
             var fileName = uuidv4() + path.extname(image.name)
             var uploadPath = uploadDirectory + "/" + fileName
-            product.images.push({path: "/images/products/" + fileName})
+            product.images.push({ path: "/images/products/" + fileName })
             image.mv(uploadPath, function (err) {
                 if (err) {
                     return res.status(500).send(err) //500 is server error
@@ -272,9 +272,32 @@ const adminUpload = async (req, res, next) => {
             })
         }
         await product.save()
-        
+
         return res.send("Files uploaded!")
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminDeleteProductImage = async (req, res, next) => {
+    try {
+        // req.params.imagePath is from productRoutes.js line 19 "/admin/image/:imagePath/:productId"
+        const imagePath = decodeURIComponent(req.params.imagePath)
+        const path = require("path")
+        const finalPath = path.resolve("../frontend/public") + imagePath;
+        const fs = require("fs") // built in node file system 
+        fs.unlink(finalPath, (err) => {
+            if (err) {
+                res.status(500).send(err);
+            }
+        });
+        await Product.findOneAndUpdate(
+            { _id: req.params.productId }, // find product with specified ID
+            { $pull: { images: { path: imagePath } } } // if found pull specified path from images array
+            ).orFail();
+
+        return res.end() // if we do not want to return any data, we can use res.end()
     } catch (error) {
         next(error)
     }
@@ -288,5 +311,6 @@ module.exports = {
     adminDeleteProduct,
     adminCreateProduct,
     adminUpdateProduct,
-    adminUpload
+    adminUpload,
+    adminDeleteProductImage
 }
