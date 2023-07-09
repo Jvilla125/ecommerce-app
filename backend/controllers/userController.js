@@ -1,5 +1,6 @@
 // Controller methods will be performing actual database operations for our app
 const User = require('../models/UserModel');
+const { hashPassword } = require('../utils/hashPassword')
 
 const getUsers = async (req, res, next) => {
     try {
@@ -26,11 +27,12 @@ const registerUser = async (req, res, next) => {
         if (userExists) {
             return res.status(400).json({ error: "user exists" })
         } else {
+            const hashedPassword = hashPassword(password) // <- password comes from req.body
             const user = await User.create({
                 name,
                 lastName,
                 email: email.toLowerCase(),
-                password: password
+                password: hashedPassword // <- imported from utils/hashPassword file to be more secure
             })
             res.status(201).send(user) //if user was created successfully, it will return a success message
         }
