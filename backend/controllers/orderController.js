@@ -90,10 +90,44 @@ const updateOrderToDelivered = async (req, res, next) => {
     }
 }
 
+// Admin function: get a list of Orders
+const getOrders = async (req, res, next) => {
+    try {
+        // find all orders and get user data except the password property
+        // sort by paymentMethod in descending order (Z-A)
+        const orders = await Order.find({}).populate("user", "-password").sort({ paymentMethod: "desc" });
+        res.send(orders)
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Admin function 
+const getOrderForAnalysis = async (req, res, next) => {
+    try {
+        const start = new Date(req.params.date);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(req.params.date);
+        end.setHours(23, 59, 59, 999);
+
+        const order = await Order.find({
+            createdAt: {
+                $gte: start,
+                $lte: end,
+            }
+        }).sort({ createdAt: "asc" })
+        res.send(order);
+
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     getUserOrders,
     getOrder,
     createOrder,
     updateOrderToPaid,
-    updateOrderToDelivered
+    updateOrderToDelivered,
+    getOrders,
+    getOrderForAnalysis
 }
