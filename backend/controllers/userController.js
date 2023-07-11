@@ -107,6 +107,7 @@ const loginUser = async (req, res, next) => {
     }
 }
 
+// User logged in function
 const updateUserProfile = async (req, res, next) => {
     try {
         const user = await User.findById(req.user._id).orFail();
@@ -150,6 +151,10 @@ const getUserProfile = async (req, res, next) => {
 
 const writeReview = async (req, res, next) => {
     try {
+
+        //saving two models in this function
+        const session = await Review.startSession();
+
         // get comment, rating from req.body:
         const { comment, rating } = req.body; // from user's input
         // validate request:
@@ -160,6 +165,8 @@ const writeReview = async (req, res, next) => {
         const ObjectId = require("mongodb").ObjectId;
         let reviewId = ObjectId();
 
+        //start transaction before the first database 
+        session.startTransaction();
         await Review.create([
             {
                 _id: reviewId,
@@ -167,21 +174,21 @@ const writeReview = async (req, res, next) => {
                 rating: Number(rating),
                 user: { _id: req.user._id, name: req.user.name + " " + req.user.lastName },
             }
-        ])
+        ], { session: session })
 
-        const product = await Product.findById(req.params.productId).populate("reviews");
+        const product = await Product.findById(req.params.productId).populate("reviews").session(session);
 
-        // find a review's user id (through model reference)
+        // find a review's user id (through model reference) and req.user._id
         // Meaning that if a review already has a review from a user in the database
         // compare it to the user's new review
         // if they match, then that user has already provided a review 
         const alreadyReviewed = product.reviews.find((r) => r.user._id.toString()
-        === req.user._id.toString()); 
-        if(alreadyReviewed){
+            === req.user._id.toString());
+        if (alreadyReviewed) {
+            await session.abortTransaction();
+            session.endSession()
             return res.status(400).send("product already reviewed")
         }
-
-
 
         let prc = [...product.reviews];
         prc.push({ rating: rating });
@@ -195,10 +202,49 @@ const writeReview = async (req, res, next) => {
             product.rating = prc.map((item) => Number(item.rating)).reduce((sum,
                 item) => sum + item, 0) / product.reviews.length;
         }
+
         await product.save();
 
+        await session.commitTransaction(); // both sessions saved to the database
+        session.endSession();
         res.send('review created')
     } catch (error) {
+        await session.abortTransaction();
+        next(error)
+    }
+}
+
+const getUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).select("name lastName email isAdmin").orFail();
+        return res.send(user)
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Admin logged in function
+const updateUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        user.name = req.body.name || user.name;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.isAdmin = req.body.isAdmin
+        await user.save()
+        res.send("User updated")
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Admin logged in function
+const deleteUser = async(req, res, next)=> {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        await user.remove()
+        res.send("User Removed")
+    } catch(error){
         next(error)
     }
 }
@@ -209,5 +255,14 @@ module.exports = {
     loginUser,
     updateUserProfile,
     getUserProfile,
-    writeReview
+    writeReview,
+    getUser,
+    updateUser, 
+    deleteUser
 }
+
+// More than one database operation should be wrapped in Transactions (writeReview function)
+// Both operations should be successful
+// if not then none of the operations should be successful
+// If one works and the other doesn't it will provide errors in the future
+// Transactions() ensures BOTH collections are created or NONE is created
