@@ -252,7 +252,6 @@ const adminUpload = async (req, res, next) => {
         const uploadDirectory = path.resolve(__dirname, "../../frontend", "public", "images", "products") //dirname points to directory productController is in
 
         let product = await Product.findById(req.query.productId).orFail()
-
         let imagesTable = []
 
         if (Array.isArray(req.files.images)) {
