@@ -1,5 +1,8 @@
 // Controller methods will be performing actual database operations for our app
 const User = require('../models/UserModel');
+const Review = require('../models/ReviewModel')
+const Product = require("../models/ProductModel")
+
 const { hashPassword, comparePasswords } = require('../utils/hashPassword')
 const generateAuthToken = require("../utils/generateAuthToken")
 
@@ -116,7 +119,7 @@ const updateUserProfile = async (req, res, next) => {
         user.zipCode = req.body.zipCode;
         user.city = req.body.city;
         user.state = req.body.state;
-        if(req.body.password !== user.password){
+        if (req.body.password !== user.password) {
             user.password = hashPassword(req.body.password)
         }
         await user.save();
@@ -136,9 +139,75 @@ const updateUserProfile = async (req, res, next) => {
     }
 }
 
+const getUserProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail() // req.params.id is fron userRoutes ":id"
+        return res.send(user);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const writeReview = async (req, res, next) => {
+    try {
+        // get comment, rating from req.body:
+        const { comment, rating } = req.body; // from user's input
+        // validate request:
+        if (!(comment && rating)) { // user will need to input both in order to write a review
+            return res.status(400).send("All inputs are required");
+        }
+        // create a review id 
+        const ObjectId = require("mongodb").ObjectId;
+        let reviewId = ObjectId();
+
+        await Review.create([
+            {
+                _id: reviewId,
+                comment: comment,
+                rating: Number(rating),
+                user: { _id: req.user._id, name: req.user.name + " " + req.user.lastName },
+            }
+        ])
+
+        const product = await Product.findById(req.params.productId).populate("reviews");
+
+        // find a review's user id (through model reference)
+        // Meaning that if a review already has a review from a user in the database
+        // compare it to the user's new review
+        // if they match, then that user has already provided a review 
+        const alreadyReviewed = product.reviews.find((r) => r.user._id.toString()
+        === req.user._id.toString()); 
+        if(alreadyReviewed){
+            return res.status(400).send("product already reviewed")
+        }
+
+
+
+        let prc = [...product.reviews];
+        prc.push({ rating: rating });
+        product.reviews.push(reviewId);
+
+        if (product.reviews.length === 1) {
+            product.rating = Number(rating);
+            product.reviewsNumber = 1;
+        } else {
+            product.reviewsNumber = product.reviews.length;
+            product.rating = prc.map((item) => Number(item.rating)).reduce((sum,
+                item) => sum + item, 0) / product.reviews.length;
+        }
+        await product.save();
+
+        res.send('review created')
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getUsers,
     registerUser,
     loginUser,
-    updateUserProfile
+    updateUserProfile,
+    getUserProfile,
+    writeReview
 }
