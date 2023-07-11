@@ -30,15 +30,19 @@ const createOrder = async (req, res, next) => {
         if (!cartItems || !orderTotal || !paymentMethod) {
             return res.status(400).send("All inputs are required");
         }
+        // need to collect id #'s of each item added to the cart
+        // need to update the sales of the product collection
         let ids = cartItems.map((item) => {
             return item.productID;
         })
+        // collect the quantity of each item added to the cart
         let qty = cartItems.map((item) => {
             return Number(item.quantity);
         })
 
-        await Product.find({ _id: { $in: ids } }).then((products) =>{
-            products.forEach(function(product, idx){
+        // Each of the product we update the final sale
+        await Product.find({ _id: { $in: ids } }).then((products) => {
+            products.forEach(function (product, idx) {
                 product.sales += qty[idx];
                 product.save()
             })
@@ -58,8 +62,38 @@ const createOrder = async (req, res, next) => {
     }
 }
 
+// Update order is paid
+const updateOrderToPaid = async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id).orFail();
+        order.isPaid = true;
+        order.paidAt = Date.now();
+
+        const updatedOrder = await order.save()
+        res.send(updatedOrder);
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Admin function: update order to be delivered 
+const updateOrderToDelivered = async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id).orFail();
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+        const updatedOrder = await order.save();
+        res.send(updatedOrder);
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getUserOrders,
     getOrder,
-    createOrder
+    createOrder,
+    updateOrderToPaid,
+    updateOrderToDelivered
 }
