@@ -4,8 +4,10 @@ import UsersPageComponent from "../../components/UsersPageComponent"
 import axios from "axios";
 
 // we are going to fetch users data using axios 
-const fetchUsers = async () => {
-    const {data} = await axios.get("/api/users");
+const fetchUsers = async (abctrl) => {
+    const {data} = await axios.get("/api/users", {
+        signal: abctrl.signal,
+    });
     return data
 }
 

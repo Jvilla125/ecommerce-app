@@ -14,9 +14,21 @@ const UsersPageComponent = ({ fetchUsers }) => {
         if (window.confirm("Are you sure?")) alert("User deleted")
     };
 
+    // when a user goes to User page there is a database connection
+    // if a user changes their mind and goes to another page,
+    // then database connection is aborted 
     useEffect(() => {
-        fetchUsers().then(res => setUsers(res));
-    }, [])
+        const abctrl = new AbortController();
+        fetchUsers(abctrl)
+            .then((res) => setUsers(res))
+            .catch((er) =>
+                console.log(
+                    er.response.data.message ? er.response.data.message : er.response.data
+                )
+            );
+        return () => abctrl.abort();
+    }, []);
+
 
     return (
         <Row className="m-5">
@@ -25,7 +37,7 @@ const UsersPageComponent = ({ fetchUsers }) => {
             </Col>
             <Col md={10}>
                 <h1>User List</h1>
-                {console.log(users)}
+
                 <Table striped bordered hover responsive>
                     <thead>
                         <tr>
@@ -38,17 +50,18 @@ const UsersPageComponent = ({ fetchUsers }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {["bi bi-check-lg text-success", "bi bi-x-lg text-danger"].map((item, idx) => (
+                        {users.map((user, idx) => (
                             <tr key={idx}>
                                 <td>{idx + 1} </td>
-                                <td>Mark </td>
-                                <td>Twain</td>
-                                <td>Email@email.com</td>
+                                <td>{user.name} </td>
+                                <td>{user.lastName}</td>
+                                <td>{user.email}</td>
                                 <td>
-                                    <i className={item}></i>
+                                    {user.isAdmin ? <i className="bi bi-check-lg text-success"></i>
+                                        : <i className="bi bi-x-lg text-danger"></i>}
                                 </td>
                                 <td>
-                                    <LinkContainer to="/admin/edit-user">
+                                    <LinkContainer to={`/admin/edit-user/${user._id}`}>
                                         <Button className='btn-sm'>
                                             <i className='bi bi-pencil-square'></i>
                                         </Button>
