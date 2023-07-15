@@ -11,9 +11,10 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [isPaid, setIsPaid] = useState(false);
     const [isDelivered, setIsDelivered] = useState(false);
-    const [cartSubtotal, setCartSubtotal] = useState(0)
+    const [cartSubtotal, setCartSubtotal] = useState(0);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [orderButtonMessage, setOrderButtonMessage] = useState("Mark as delivered");
+    const [cartItems, setCartItems] = useState([]);
 
     useEffect(() => {
         getOrder(id).then((order) => {
@@ -26,6 +27,7 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
                 setOrderButtonMessage("Order is finished")
                 setButtonDisabled(true);
             }
+            setCartItems(order.cartItems)
         })
             .catch(er => console.log(er.response.data.message ? er.response.data.message
                 : er.response.data))
@@ -70,8 +72,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
                                 </Alert>
                             </Col>
                             <Col>
-                                <Alert className='mt-3' variant={isPaid ? "success": "danger"}>
-                                {isPaid ?
+                                <Alert className='mt-3' variant={isPaid ? "success" : "danger"}>
+                                    {isPaid ?
                                         <>
                                             Paid on {isPaid}
                                         </>
@@ -87,8 +89,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
                     <br />
                     <h2>Order items</h2>
                     <ListGroup variant='flush'>
-                        {Array.from({ length: 3 }).map((item, idx) => (
-                            <CartItemComponent />
+                        {cartItems.map((item, idx) => (
+                            <CartItemComponent key={idx} item={item} orderCreated={true} />
                         ))}
                     </ListGroup>
                 </Col>
