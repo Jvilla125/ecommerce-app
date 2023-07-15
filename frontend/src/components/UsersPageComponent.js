@@ -6,12 +6,18 @@ import AdminLinksComponents from '../components/admin/AdminLinksComponents'
 
 
 // This component will show dynamic user data in /admin/users page 
-const UsersPageComponent = ({ fetchUsers }) => {
+const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
 
     const [users, setUsers] = useState([]);
+    const [userDeleted, setUserDeleted] = useState(false)
 
-    const deleteHandler = () => {
-        if (window.confirm("Are you sure?")) alert("User deleted")
+    const deleteHandler = async (userId) => {
+        if (window.confirm("Are you sure?")) {
+            const data = await deleteUser(userId)
+            if(data === 'User Removed'){
+                setUserDeleted(!userDeleted)
+            }
+        }
     };
 
     // when a user goes to User page there is a database connection
@@ -27,7 +33,8 @@ const UsersPageComponent = ({ fetchUsers }) => {
                 )
             );
         return () => abctrl.abort();
-    }, []);
+    }, [userDeleted]); 
+    // useEffect will be invoked if there is a change in state ex: [userDeleted]
 
 
     return (
@@ -67,7 +74,7 @@ const UsersPageComponent = ({ fetchUsers }) => {
                                         </Button>
                                     </LinkContainer>
                                     {" / "}
-                                    <Button variant="danger" className='btn-sm' onClick={deleteHandler}>
+                                    <Button variant="danger" className='btn-sm' onClick={() => deleteHandler(user._id)}>
                                         <i className='bi bi-x-circle' ></i>
                                     </Button>
                                 </td>
