@@ -1,4 +1,4 @@
-import UsersPageComponent from "../../components/UsersPageComponent"
+import UsersPageComponent from "./components/UsersPageComponent"
 
 // axios is used to communicate with the backend
 import axios from "axios";

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Row, Col, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import AdminLinksComponents from '../components/admin/AdminLinksComponents'
+import AdminLinksComponents from '../../../components/admin/AdminLinksComponents'
 
 
 
@@ -25,11 +25,9 @@ const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
     // then database connection is aborted 
     useEffect(() => {
         const abctrl = new AbortController();
-        fetchUsers(abctrl)
-            .then((res) => setUsers(res))
-            .catch((er) =>
+        fetchUsers(abctrl).then((res) => setUsers(res)).catch((err) =>
                 console.log(
-                    er.response.data.message ? er.response.data.message : er.response.data
+                    err.response.data.message ? err.response.data.message : err.response.data
                 )
             );
         return () => abctrl.abort();
