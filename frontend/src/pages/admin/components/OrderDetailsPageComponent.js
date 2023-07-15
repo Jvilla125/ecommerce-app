@@ -120,7 +120,7 @@ const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
                                             if (res){
                                                 setIsDelivered(true);
                                             }
-                                        })
+                                        }).catch(er => console.log(er.response.data.message ? er.response.data.message : er.response.data))
                                     } 
                                 disabled={buttonDisabled}
                                     variant='danger'
