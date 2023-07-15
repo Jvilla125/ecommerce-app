@@ -30,7 +30,7 @@ const CartItemComponent = ({ item, orderCreated = false }) => {
                             onClick={() => window.confirm("Are you sure?")}>
                             <i className='bi bi-trash'></i>
                         </Button>
-                    </Col>
+                    </Col> 
                 </Row>
             </ListGroup.Item>
             <br />

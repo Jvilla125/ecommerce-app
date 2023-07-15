@@ -4,7 +4,7 @@ import CartItemComponent from '../../../components/CartItemComponent';
 
 import { useParams } from "react-router-dom" // allows to read dynamic parameter (id)  
 
-const OrderDetailsPageComponent = ({ getOrder }) => {
+const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
     const { id } = useParams(); //id is defined in the routing -> App.js line 80
 
     const [userInfo, setUserInfo] = useState({})
@@ -113,7 +113,18 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
                         </ListGroup.Item>
                         <ListGroup.Item >
                             <div className='d-grid gap-2'>
-                                <Button size='lg' disabled={buttonDisabled} variant='danger' type='button'>
+                                <Button size='lg'
+                                    onClick={() => 
+                                        markAsDelivered(id)
+                                        .then((res) => {
+                                            if (res){
+                                                setIsDelivered(true);
+                                            }
+                                        })
+                                    } 
+                                disabled={buttonDisabled}
+                                    variant='danger'
+                                    type='button'>
                                     {orderButtonMessage}
                                 </Button>
                             </div>
