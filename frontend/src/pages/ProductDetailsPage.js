@@ -1,13 +1,23 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Row, Col, Container, Image, ListGroup, Form, Button, Alert } from "react-bootstrap"
 import AddedToCartMessageComponent from '../components/AddedToCartMessageComponent';
 import { Rating } from 'react-simple-star-rating';
 import ImageZoom from 'js-image-zoom';
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
 
 const ProductDetailsPage = () => {
-    var options ={
+    const dispatch = useDispatch();
+
+    const addToCartHandler = () => {
+        dispatch(addToCart());
+    }
+
+    const products = useSelector((state) => state.cart.value);
+
+    var options = {
         scale: 2,
-        offset: {vertical: 0, horizontal: 10}
+        offset: { vertical: 0, horizontal: 10 }
     }
     useEffect(() => {
         new ImageZoom(document.getElementById('first'), options)
@@ -20,22 +30,24 @@ const ProductDetailsPage = () => {
         <Container>
             <AddedToCartMessageComponent />
             <Row className="mt-5">
-                {/* Bootstrap has a total of 12 columns */}
-                {/* We are separating the columns into 4 and 8 */}
-                <Col style={{zIndex: 1}} md={4}>
-                    <div id='first'>
-                        <Image crossOrigin='anonymous' fluid src="/images/games-category.png" />
+                <Col style={{ zIndex: 1 }} md={4}>
+                    <div id="first">
+                        <Image
+                            crossOrigin="anonymous"
+                            fluid
+                            src="/images/games-category.png"
+                        />
                     </div>
                     <br />
-                    <div id='second'>
+                    <div id="second">
                         <Image fluid src="/images/monitors-category.png" />
                     </div>
                     <br />
-                    <div id='third'>
+                    <div id="third">
                         <Image fluid src="/images/tablets-category.png" />
                     </div>
                     <br />
-                    <div id='fourth'>
+                    <div id="fourth">
                         <Image fluid src="/images/games-category.png" />
                     </div>
                     <br />
@@ -45,70 +57,59 @@ const ProductDetailsPage = () => {
                         <Col md={8}>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
-                                    <h1>Product name</h1>
+                                    <h1>Product name {products}</h1>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    <Rating readonly size={20} initialValue={4} />(1)
+                                    <Rating readonly size={20} initialValue={4} /> (1)
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    Price:
-                                    <span className='fw-bold'>
-                                        $345
-                                    </span>
+                                    Price <span className="fw-bold">$345</span>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    Example 3
+                                    Porta ac consectetur ac Lorem ipsum dolor, sit amet
+                                    consectetur adipisicing elit. Perferendis, illo.
                                 </ListGroup.Item>
                             </ListGroup>
                         </Col>
                         <Col md={4}>
                             <ListGroup>
+                                <ListGroup.Item>Status: in stock</ListGroup.Item>
                                 <ListGroup.Item>
-                                    Status: in stock
-                                </ListGroup.Item>
-                                <ListGroup.Item>Price:
-                                    <span className='fw-bold'>
-                                        $345
-                                    </span>
+                                    Price: <span className="fw-bold">$345</span>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     Quantity:
                                     <Form.Select size="lg" aria-label="Default select example">
                                         <option>1</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
+                                        <option value="1">2</option>
+                                        <option value="2">3</option>
+                                        <option value="3">4</option>
                                     </Form.Select>
                                 </ListGroup.Item>
-                                <ListGroup>
-                                    <ListGroup.Item>
-                                        <Button variant="danger">
-                                            Add to cart
-                                        </Button>
-                                    </ListGroup.Item>
-                                </ListGroup>
+                                <ListGroup.Item>
+                                    <Button onClick={addToCartHandler} variant="danger">Add to cart</Button>
+                                </ListGroup.Item>
                             </ListGroup>
-                            Product Status, quantity
                         </Col>
                     </Row>
                     <Row>
-                        <Col className='mt-5'>
-                            <h5>Reviews</h5>
-                            <ListGroup variant='flush'>
+                        <Col className="mt-5">
+                            <h5>REVIEWS</h5>
+                            <ListGroup variant="flush">
                                 {Array.from({ length: 10 }).map((item, idx) => (
                                     <ListGroup.Item key={idx}>
                                         John Doe <br />
                                         <Rating readonly size={20} initialValue={4} />
                                         <br />
-                                        Date: <br />
-                                        This is the review
+                                        20-09-2001 <br />
+                                        Porta ac consectetur ac Lorem ipsum dolor, sit amet
+                                        consectetur adipisicing elit. Perferendis, illo.
                                     </ListGroup.Item>
                                 ))}
                             </ListGroup>
                         </Col>
                     </Row>
                     <hr />
-                    send Review Form
                     <Alert variant="danger">Login first to write a review</Alert>
                     <Form>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -117,13 +118,15 @@ const ProductDetailsPage = () => {
                         </Form.Group>
                         <Form.Select aria-label="Default select example">
                             <option>Your rating</option>
-                            <option value="5">(very good)</option>
-                            <option value="4">(good)</option>
-                            <option value="3">(average)</option>
-                            <option value="2">(bad)</option>
-                            <option value="1">(awful)</option>
+                            <option value="5">5 (very good)</option>
+                            <option value="4">4 (good)</option>
+                            <option value="3">3 (average)</option>
+                            <option value="2">2 (bad)</option>
+                            <option value="1">1 (awful)</option>
                         </Form.Select>
-                        <Button className='mb-3 mt-3' variant="primary">Submit</Button>
+                        <Button className="mb-3 mt-3" variant="primary">
+                            Submit
+                        </Button>
                     </Form>
                 </Col>
             </Row>
