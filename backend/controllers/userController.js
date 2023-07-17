@@ -70,7 +70,7 @@ const loginUser = async (req, res, next) => {
         if (!(email && password)) {
             return res.status(400).send("All inputs are required")
         }
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ email }).orFail();
         // if user, return cookie and json with success message
         if (user && comparePasswords(password, user.password)) {
             // Note: Will need to compare input password and database password
