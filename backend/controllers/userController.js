@@ -96,7 +96,7 @@ const loginUser = async (req, res, next) => {
                 success: "user logged in",
                 userLoggedIn: {
                     _id: user._id, name: user.name, lastName: user.lastName,
-                    email: user.email, isAdmin: user.isAdmin, doNotLogout
+                    email: user.email, isAdmin: user.isAdmin, doNotLogout,
                 }
             });
         } else { // if not user, then return status 401

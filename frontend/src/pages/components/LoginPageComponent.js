@@ -4,21 +4,33 @@ import { Link } from 'react-router-dom';
 
 const LoginPageComponent = ({ loginUserApiRequest }) => {
     const [validated, setValidated] = useState(false);
+    // Before the user attempts to login, there will be no success/error message or spinner on the login button
+    const [loginUserResponseState, setLoginUserResponseState] = useState({
+        success: "",
+        error: "",
+        loading: false
+    });
 
     const handleSubmit = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const form = event.currentTarget;
-
+        const form = event.currentTarget.elements; // event.currentTarget is what is inputted 
         const email = form.email.value;
         const password = form.password.value;
         const doNotLogout = form.doNotLogout.checked;
-        if (event.currentTarget.checkValidity() === true && email && password) {
-            loginUserApiRequest(email, password, doNotLogout)
-            .then((res) => console.log(res))
-            .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
-        }
 
+        // if the following inputs are true then we send the inputs to the api in userController.js
+        if (event.currentTarget.checkValidity() === true && email && password) {
+            setLoginUserResponseState({ loading: true }) // if login is successful, set loading to true
+            loginUserApiRequest(email, password, doNotLogout)
+                .then((res) => {
+                    setLoginUserResponseState({ success: res.success, loading: false, error: "" })
+                })
+                .catch((er) => setLoginUserResponseState({
+                    error: er.response.data.message ?
+                        er.response.data.message : er.response.data
+                }));
+        }
         setValidated(true);
     };
 
@@ -48,7 +60,6 @@ const LoginPageComponent = ({ loginUserApiRequest }) => {
                         </Form.Group>
                         <Form.Group className='mb-3' controlId="formBasicCheckbox">
                             <Form.Check
-                                required
                                 type="checkbox"
                                 name="doNotLogout"
                                 label="Do not logout"
@@ -61,16 +72,23 @@ const LoginPageComponent = ({ loginUserApiRequest }) => {
                             </Col>
                         </Row>
                         <Button variant="primary" type="submit">
-                            <Spinner
-                                as="span"
-                                animation="border"
-                                size="sm"
-                                role="status"
-                                aria-hidden="true"
-                            />
+                            {loginUserResponseState && loginUserResponseState.loading === true ? (
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            ) : (
+                                ""
+                            )}
+
                             Login
                         </Button>
-                        <Alert show={true} variant='danger'>
+                        {/* 'wrong credentials comes from userController.js line 103 */}
+                        <Alert show={loginUserResponseState && loginUserResponseState.error === "wrong credentials"}
+                            variant='danger'>
                             Wrong credentials
                         </Alert>
                     </Form>
