@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Form, Col, Button, Spinner, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPageComponent = ({ loginUserApiRequest }) => {
     const [validated, setValidated] = useState(false);
@@ -10,6 +10,9 @@ const LoginPageComponent = ({ loginUserApiRequest }) => {
         error: "",
         loading: false
     });
+
+    const navigate = useNavigate(); // going to use navigate to redirect user to admin or user page
+    // depending on if they are admin or not
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -25,6 +28,11 @@ const LoginPageComponent = ({ loginUserApiRequest }) => {
             loginUserApiRequest(email, password, doNotLogout)
                 .then((res) => {
                     setLoginUserResponseState({ success: res.success, loading: false, error: "" })
+                    // if user !isAdmin then navigate to user page
+                    if (res.success === "user logged in" && !res.userLoggedIn.isAdmin)
+                        navigate("/user", { replace: true })
+                    // else if user isAdmin navigate to admin page
+                    else navigate("/admin/orders", { replace: true })
                 })
                 .catch((er) => setLoginUserResponseState({
                     error: er.response.data.message ?
