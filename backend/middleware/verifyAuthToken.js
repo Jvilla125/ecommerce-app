@@ -3,8 +3,6 @@
 const jwt = require("jsonwebtoken")
 
 const verifyIsLoggedIn = (req, res, next) => {
-    next()
-    return // to do : remove later
     try {
         const token = req.cookies.access_token
         if (!token) {
@@ -26,8 +24,6 @@ const verifyIsLoggedIn = (req, res, next) => {
 // Then it will determine if that cookie has admin authentication
 
 const verifyIsAdmin = (req, res, next) => {
-    next()
-    return // to do : remove later
     if(req.user && req.user.isAdmin){ // isAdmin is from userController.js loginUser function
         next() // go to the next routes in productRoutes.js
     } else {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Form, Col, Button, Spinner, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
-const LoginPageComponent = ({ loginUserApiRequest }) => {
+const LoginPageComponent = ({ loginUserApiRequest, reduxDispatch, setReduxUserState }) => {
     const [validated, setValidated] = useState(false);
     // Before the user attempts to login, there will be no success/error message or spinner on the login button
     const [loginUserResponseState, setLoginUserResponseState] = useState({
@@ -28,12 +28,16 @@ const LoginPageComponent = ({ loginUserApiRequest }) => {
             loginUserApiRequest(email, password, doNotLogout)
                 .then((res) => {
                     setLoginUserResponseState({ success: res.success, loading: false, error: "" })
+                    // set login user data to global redux state to be available at all pages
+                    if (res.userLoggedIn){
+                        reduxDispatch(setReduxUserState(res.userLoggedIn)); 
+                    }
+
                     // if user !isAdmin then navigate to user page
                     if (res.success === "user logged in" && !res.userLoggedIn.isAdmin)
-                        navigate("/user", { replace: true })
-                    // else if user isAdmin navigate to admin page
-                    else navigate("/admin/orders", { replace: true })
-                })
+                        window.location.href = "/user"
+                        else window.location.href = "/admin/orders"
+                })// replace true means react deletes history of switching pages(can press back to login)
                 .catch((er) => setLoginUserResponseState({
                     error: er.response.data.message ?
                         er.response.data.message : er.response.data

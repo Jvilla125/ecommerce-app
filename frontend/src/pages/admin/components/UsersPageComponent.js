@@ -3,11 +3,12 @@ import { Table, Row, Col, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import AdminLinksComponents from '../../../components/admin/AdminLinksComponents'
 
-
+import { logout } from '../../../redux/actions/userActions';
+import { useDispatch } from 'react-redux';
 
 // This component will show dynamic user data in /admin/users page 
 const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
-
+    const dispatch = useDispatch();
     const [users, setUsers] = useState([]);
     const [userDeleted, setUserDeleted] = useState(false)
 
@@ -26,9 +27,10 @@ const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
     useEffect(() => {
         const abctrl = new AbortController();
         fetchUsers(abctrl).then((res) => setUsers(res)).catch((err) =>
-                console.log(
-                    err.response.data.message ? err.response.data.message : err.response.data
-                )
+        dispatch(logout())
+                // console.log(
+                //     err.response.data.message ? err.response.data.message : err.response.data
+                // )
             );
         return () => abctrl.abort();
     }, [userDeleted]); 

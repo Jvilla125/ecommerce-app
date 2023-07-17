@@ -2,8 +2,12 @@ import React from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownButton, Button, InputGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
+import { logout } from '../redux/actions/userActions';
+import { useDispatch } from 'react-redux';
 
 const HeaderComponent = () => {
+    const dispatch = useDispatch();
+
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
             <Container>
@@ -39,7 +43,7 @@ const HeaderComponent = () => {
                             {/* eventKey lets users know that we are currently on that page by highlighting it */}
                             <NavDropdown.Item eventKey="/user/my-orders" as={Link} to="/user/my-orders">My orders</NavDropdown.Item>
                             <NavDropdown.Item eventKey="/user/" as={Link} to="/user">My Profile</NavDropdown.Item>
-                            <NavDropdown.Item >Logout</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => dispatch(logout())}>Logout</NavDropdown.Item>
                         </NavDropdown>
                         <LinkContainer to="/login">
                             <Nav.Link >

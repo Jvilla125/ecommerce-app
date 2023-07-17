@@ -3,9 +3,11 @@ import { Row, Col, Table, Button } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap';
 import AdminLinksComponents from '../../../components/admin/AdminLinksComponents';
 
-
+import { logout } from '../../../redux/actions/userActions';
+import { useDispatch } from 'react-redux';
 
 const ProductsPageComponent = ({ fetchProducts, deleteProduct }) => {
+    const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
     const [productDeleted, setProductDeleted] = useState(false);
 
@@ -23,9 +25,10 @@ const ProductsPageComponent = ({ fetchProducts, deleteProduct }) => {
         fetchProducts(abctrl)
             .then((res) => setProducts(res))
             .catch((err) =>
-                setProducts([
-                    {name: err.response.data.message ? err.response.data.message : err.response.data}
-                ])
+            dispatch(logout())
+                // setProducts([
+                //     {name: err.response.data.message ? err.response.data.message : err.response.data}
+                // ])
             );
         return () => abctrl.abort();
     }, [productDeleted]);

@@ -4,7 +4,11 @@ import CartItemComponent from '../../../components/CartItemComponent';
 
 import { useParams } from "react-router-dom" // allows to read dynamic parameter (id)  
 
+import { logout } from '../../../redux/actions/userActions';
+import { useDispatch } from 'react-redux';
+
 const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
+    const dispatch = useDispatch();
     const { id } = useParams(); //id is defined in the routing -> App.js line 80
 
     const [userInfo, setUserInfo] = useState({})
@@ -29,8 +33,11 @@ const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
             }
             setCartItems(order.cartItems)
         })
-            .catch(er => console.log(er.response.data.message ? er.response.data.message
-                : er.response.data))
+            .catch(er => 
+                dispatch(logout())
+                // console.log(er.response.data.message ? er.response.data.message
+                // : er.response.data))
+            )
     }, [isDelivered, id])
 
     return (
