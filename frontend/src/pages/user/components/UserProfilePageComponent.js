@@ -8,13 +8,15 @@ const UserProfilePageComponent = ({ updateUserApiRequest }) => {
         success: "", error: ""
     });
 
+    const [passwordsMatchState, setPasswordsMatchState] = useState(true);
+
     const onChange = () => {
         const password = document.querySelector('input[name=password]')
-        const confirm = document.querySelector('input[name=confirmPassword]')
-        if (confirm.value === password.value) {
-            confirm.setCustomValidity("")
+        const confirmPassword = document.querySelector('input[name=confirmPassword]')
+        if (confirmPassword.value === password.value) {
+            setPasswordsMatchState(true);
         } else {
-            confirm.setCustomValidity("Passwords do not match")
+            setPasswordsMatchState(false);
         }
     }
     const handleSubmit = (event) => {
@@ -141,6 +143,7 @@ const UserProfilePageComponent = ({ updateUserApiRequest }) => {
                                 name="password"
                                 minLength={6}
                                 onChange={onChange}
+                                isInvalid={!passwordsMatchState}
                             />
                             <Form.Control.Feedback type="invalid"> Please enter a valid password</Form.Control.Feedback>
                             <Form.Text className='text-muted'>Password should have at least 6 characters</Form.Text>
@@ -154,6 +157,7 @@ const UserProfilePageComponent = ({ updateUserApiRequest }) => {
                                 name="confirmPassword"
                                 minLength={6}
                                 onChange={onChange}
+                                isInvalid={!passwordsMatchState}
                             />
                             <Form.Control.Feedback type="invalid"> Both passwords should match</Form.Control.Feedback>
                         </Form.Group>
