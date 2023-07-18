@@ -12,7 +12,6 @@ const UserProfilePageComponent = ({ updateUserApiRequest, fetchUser, userInfoFro
     const [user, setUser] = useState({})
     const userInfo = userInfoFromRedux;
 
-
     useEffect(() => {
         fetchUser(userInfo._id)
             .then((data) => setUser(data))
