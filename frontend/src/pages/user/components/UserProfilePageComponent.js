@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
-const UserProfilePageComponent = ({ updateUserApiRequest }) => {
+
+const UserProfilePageComponent = ({ updateUserApiRequest, fetchUser, userInfo }) => {
     const [validated, setValidated] = useState(false);
     const [updateUserResponseState, setUpdateUserResponseState] = useState({
         success: "", error: ""
     });
-
     const [passwordsMatchState, setPasswordsMatchState] = useState(true);
+    const [user, setUser] = useState({})
+
+    useEffect(() => {
+        fetchUser(userInfo._id)
+            .then((data) => setUser(data))
+            .catch((er) => console.log(er));
+    }, [userInfo._id])
 
     const onChange = () => {
         const password = document.querySelector('input[name=password]')
@@ -19,11 +25,12 @@ const UserProfilePageComponent = ({ updateUserApiRequest }) => {
             setPasswordsMatchState(false);
         }
     }
+
     const handleSubmit = (event) => {
-        // prevent web browser from refreshing
         event.preventDefault();
         event.stopPropagation();
         const form = event.currentTarget.elements;
+
         const name = form.name.value;
         const lastName = form.lastName.value;
         const phoneNumber = form.phoneNumber.value;
@@ -36,143 +43,146 @@ const UserProfilePageComponent = ({ updateUserApiRequest }) => {
 
         if (event.currentTarget.checkValidity() === true && form.password.value === form.confirmPassword.value) {
             updateUserApiRequest(name, lastName, phoneNumber, address, country, zipCode, city, state, password).then(data => {
-                setUpdateUserResponseState({ success: data.success, error: "" })
+                setUpdateUserResponseState({ success: data.success, error: "" });
             })
-                .catch((er) => setUpdateUserResponseState({
-                    error: er.response.data.message ?
-                        er.response.data.message : er.response.data
-                }))
+                .catch((er) => setUpdateUserResponseState({ error: er.response.data.message ? er.response.data.message : er.response.data }))
         }
         setValidated(true);
     };
 
     return (
-        <Container >
-            <Row className='mt-5 justify-content-md-center' >
+        <Container>
+            <Row className="mt-5 justify-content-md-center">
                 <Col md={6}>
-                    <h1>User Profile</h1>
+                    <h1>Change your profile</h1>
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                        <Form.Group className='mb-3' controlId="validationCustom01">
+                        <Form.Group className="mb-3" controlId="validationCustom01">
                             <Form.Label>Your name</Form.Label>
                             <Form.Control
                                 required
                                 type="text"
-                                defaultValue="John"
+                                defaultValue={user.name}
                                 name="name"
                             />
-                            <Form.Control.Feedback type="invalid">Please enter a name</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                                Please enter a name
+                            </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicLastName">
-                            <Form.Label>Your Last Name</Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicLastName">
+                            <Form.Label>Your last name</Form.Label>
                             <Form.Control
                                 required
                                 type="text"
-                                defaultValue="Doe"
+                                defaultValue={user.lastName}
                                 name="lastName"
                             />
-                            <Form.Control.Feedback type="invalid"> Please enter your last name</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                                Please enter your last name
+                            </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicEmail">
-                            <Form.Label>Email Address</Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>Email address</Form.Label>
                             <Form.Control
                                 disabled
-                                required
-                                value="if you want to change email, please remove account and create a new one"
+                                value={user.email + "   if you want to change email, remove account and create new one with new email address"}
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicPhone">
-                            <Form.Label> Phone number</Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicPhone">
+                            <Form.Label>Phone number</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your phone number"
-                                defaultValue=""
+                                defaultValue={user.phoneNumber}
                                 name="phoneNumber"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicAddress">
-                            <Form.Label> Address </Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicAddress">
+                            <Form.Label>Address</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your street name and house number"
-                                defaultValue=""
+                                defaultValue={user.address}
                                 name="address"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicCountry">
-                            <Form.Label> Country </Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicCountry">
+                            <Form.Label>Country</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your country"
-                                defaultValue=""
+                                defaultValue={user.country}
                                 name="country"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicZip">
-                            <Form.Label> Zip Code </Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicZip">
+                            <Form.Label>Zip Code</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your Zip code"
-                                defaultValue=""
+                                defaultValue={user.zipCode}
                                 name="zipCode"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicCity">
-                            <Form.Label> City </Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicCity">
+                            <Form.Label>City</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your city"
-                                defaultValue=""
+                                defaultValue={user.city}
                                 name="city"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicState">
-                            <Form.Label> State </Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicState">
+                            <Form.Label>State</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your state"
-                                defaultValue=""
+                                defaultValue={user.state}
                                 name="state"
                             />
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicPassword">
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
+                                name="password"
                                 required
                                 type="password"
                                 placeholder="Password"
-                                name="password"
                                 minLength={6}
                                 onChange={onChange}
                                 isInvalid={!passwordsMatchState}
                             />
-                            <Form.Control.Feedback type="invalid"> Please enter a valid password</Form.Control.Feedback>
-                            <Form.Text className='text-muted'>Password should have at least 6 characters</Form.Text>
+                            <Form.Control.Feedback type="invalid">
+                                Please anter a valid password
+                            </Form.Control.Feedback>
+                            <Form.Text className="text-muted">
+                                Password should have at least 6 characters
+                            </Form.Text>
                         </Form.Group>
-                        <Form.Group className='mb-3' controlId="formBasicPasswordRepeat">
-                            <Form.Label>Password</Form.Label>
+                        <Form.Group className="mb-3" controlId="formBasicPasswordRepeat">
+                            <Form.Label>Repeat Password</Form.Label>
                             <Form.Control
+                                name="confirmPassword"
                                 required
                                 type="password"
                                 placeholder="Repeat Password"
-                                name="confirmPassword"
                                 minLength={6}
                                 onChange={onChange}
                                 isInvalid={!passwordsMatchState}
                             />
-                            <Form.Control.Feedback type="invalid"> Both passwords should match</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                                Both passwords should match
+                            </Form.Control.Feedback>
                         </Form.Group>
+
                         <Button variant="primary" type="submit">
                             Update
                         </Button>
-                        <Alert
-                            show={updateUserResponseState && updateUserResponseState.error !== ""}
-                            variant="danger">
-                            User with that email already exists!
+                        <Alert show={updateUserResponseState && updateUserResponseState.error !== ""} variant="danger">
+                            Something went wrong
                         </Alert>
-                        <Alert
-                            show={updateUserResponseState && updateUserResponseState.success === "user updated"}
-                            variant="info">
-                            User updated!
+                        <Alert show={updateUserResponseState && updateUserResponseState.success === "user updated"} variant="info">
+                            User updated
                         </Alert>
                     </Form>
                 </Col>
