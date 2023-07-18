@@ -3,10 +3,13 @@ import { Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownBut
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
 import { logout } from '../redux/actions/userActions';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 const HeaderComponent = () => {
     const dispatch = useDispatch();
+    // get userInfo from store.js reducer object
+    const { userInfo } = useSelector(state => state.userRegisterLogin);
 
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
@@ -33,33 +36,39 @@ const HeaderComponent = () => {
 
                     </Nav>
                     <Nav>
-                        <LinkContainer to="/admin/orders">
-                            <Nav.Link >Admin
-                                {/* the span will notify the user if there is a chat available */}
-                                <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
-                            </Nav.Link>
-                        </LinkContainer>
-                        <NavDropdown title="User" id="collasible-nav-dropdown">
-                            {/* eventKey lets users know that we are currently on that page by highlighting it */}
-                            <NavDropdown.Item eventKey="/user/my-orders" as={Link} to="/user/my-orders">My orders</NavDropdown.Item>
-                            <NavDropdown.Item eventKey="/user/" as={Link} to="/user">My Profile</NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => dispatch(logout())}>Logout</NavDropdown.Item>
-                        </NavDropdown>
-                        <LinkContainer to="/login">
-                            <Nav.Link >
-                                Login
-                            </Nav.Link>
-                        </LinkContainer>
-                        <LinkContainer to="/register">
-                            <Nav.Link >
-                                Register
-                            </Nav.Link>
-                        </LinkContainer>
+                        {userInfo.isAdmin ? (
+                            <LinkContainer to="/admin/orders">
+                                <Nav.Link >Admin
+                                    {/* the span will notify the user if there is a chat available */}
+                                    <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                                </Nav.Link>
+                            </LinkContainer>
+                        ) : userInfo.name && !userInfo.isAdmin ? (
+                            <NavDropdown title={`${userInfo.name} ${userInfo.lastName}`} id="collasible-nav-dropdown">
+                                {/* eventKey lets users know that we are currently on that page by highlighting it */}
+                                <NavDropdown.Item eventKey="/user/my-orders" as={Link} to="/user/my-orders">My orders</NavDropdown.Item>
+                                <NavDropdown.Item eventKey="/user/" as={Link} to="/user">My Profile</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => dispatch(logout())}>Logout</NavDropdown.Item>
+                            </NavDropdown>
+                        ) : (
+                            <>
+                                <LinkContainer to="/login">
+                                    <Nav.Link >
+                                        Login
+                                    </Nav.Link>
+                                </LinkContainer>
+                                <LinkContainer to="/register">
+                                    <Nav.Link >
+                                        Register
+                                    </Nav.Link>
+                                </LinkContainer>
+                            </>
+                        )}
                         <LinkContainer to="/cart">
                             <Nav.Link >
-                            <Badge bg="danger">2</Badge>
-                            <i className="bi bi-cart-dash"></i>
-                            <span className='ms-1'> Cart </span>
+                                <Badge bg="danger">2</Badge>
+                                <i className="bi bi-cart-dash"></i>
+                                <span className='ms-1'> Cart </span>
                             </Nav.Link>
                         </LinkContainer>
                     </Nav>

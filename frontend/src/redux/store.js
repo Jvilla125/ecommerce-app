@@ -11,10 +11,11 @@ import { userRegisterLoginReducer } from "./reducers/userReducers";
 // combineReducers allows you to return various reducers instead of one
 const reducer = combineReducers({
     cart: counterReducer,
-    userRegisterLoginReducer: userRegisterLoginReducer
+    userRegisterLogin: userRegisterLoginReducer
 })
 
-const userInfoInLocalStorage = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo"))
+const userInfoInLocalStorage = localStorage.getItem("userInfo")
+    ? JSON.parse(localStorage.getItem("userInfo"))
     : sessionStorage.getItem("userInfo")
         ? JSON.parse(sessionStorage.getItem("userInfo"))
         : {}
