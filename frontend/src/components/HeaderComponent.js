@@ -9,8 +9,9 @@ import { useSelector, useDispatch } from 'react-redux';
 const HeaderComponent = () => {
     const dispatch = useDispatch();
     // get userInfo from store.js reducer object
-    const { userInfo } = useSelector(state => state.userRegisterLogin);
-
+    const { userInfo } = useSelector((state) => state.userRegisterLogin);
+    // get itemsCount from redux global state
+    const itemsCount = useSelector((state) => state.cart.itemsCount);
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
             <Container>
@@ -66,7 +67,9 @@ const HeaderComponent = () => {
                         )}
                         <LinkContainer to="/cart">
                             <Nav.Link >
-                                <Badge bg="danger">2</Badge>
+                                <Badge bg="danger">
+                                    {itemsCount === 0 ? "" : itemsCount}
+                                </Badge>
                                 <i className="bi bi-cart-dash"></i>
                                 <span className='ms-1'> Cart </span>
                             </Nav.Link>
