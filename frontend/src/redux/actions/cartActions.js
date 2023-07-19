@@ -18,3 +18,12 @@ export const addToCart = (productId, quantity) => async (dispatch, getState) => 
 
     localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
 }
+
+// function to remove items from cart
+export const removeFromCart = (productID, quantity, price) => (dispatch, getState) => {
+    dispatch({
+        type: actionTypes.REMOVE_FROM_CART, // going to call reducer
+        payload: {productID: productID, quantity: quantity, price: price} // update the redux state
+    })
+    localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
+}
