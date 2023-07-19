@@ -12,6 +12,7 @@ const HeaderComponent = () => {
     const { userInfo } = useSelector((state) => state.userRegisterLogin);
     // get itemsCount from redux global state
     const itemsCount = useSelector((state) => state.cart.itemsCount);
+
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
             <Container>
@@ -27,14 +28,12 @@ const HeaderComponent = () => {
                                 <Dropdown.Item >Electronics</Dropdown.Item>
                                 <Dropdown.Item >Cars</Dropdown.Item>
                                 <Dropdown.Item >Books</Dropdown.Item>
-
                             </DropdownButton>
                             <Form.Control type="text" placeholder="Search in shop ..." />
                             <Button variant="warning">
                                 <i className="bi bi-search text-dark"></i>
                             </Button>
                         </InputGroup>
-
                     </Nav>
                     <Nav>
                         {userInfo.isAdmin ? (

@@ -25,10 +25,8 @@ const userInfoInLocalStorage = localStorage.getItem("userInfo")
 const INITIAL_STATE = {
     cart: {
         cartItems: cartItemsInLocalStorage,
-        itemsCount: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((quantity, item) =>
-            Number(item.quantity) + quantity, 0) : 0,
-        cartSubtotal: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((price, item) => 
-        price + item.price * item.quantity, 0) : 0,
+        itemsCount: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((quantity, item) => Number(item.quantity) + quantity, 0) : 0,
+        cartSubtotal: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((price, item) => price + item.price * item.quantity, 0) : 0,
     },
     userRegisterLogin: { userInfo: userInfoInLocalStorage }
 }
