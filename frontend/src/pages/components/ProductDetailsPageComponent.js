@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Container, Image, ListGroup, Form, Button, Alert } from "react-bootstrap"
 import AddedToCartMessageComponent from '../../components/AddedToCartMessageComponent';
 import { Rating } from 'react-simple-star-rating';
@@ -6,12 +6,14 @@ import ImageZoom from 'js-image-zoom';
 import { useParams } from 'react-router-dom';
 
 
-const ProductDetailsPageComponent = ({ addToCartHandler, products }) => {
-
+const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch }) => {
 
     const { id } = useParams()
-    console.log(id);
+    const [quantity, setQuantity] = useState(1)
 
+    const addToCartHandler = () => {
+        reduxDispatch(addToCartReduxAction(id, quantity))
+    }
 
     var options = {
         // width: 400,
@@ -58,7 +60,7 @@ const ProductDetailsPageComponent = ({ addToCartHandler, products }) => {
                         <Col md={8}>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
-                                    <h1>Product name {products}</h1>
+                                    <h1>Product name </h1>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Rating readonly size={20} initialValue={4} /> (1)
@@ -80,11 +82,13 @@ const ProductDetailsPageComponent = ({ addToCartHandler, products }) => {
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     Quantity:
-                                    <Form.Select size="lg" aria-label="Default select example">
-                                        <option>1</option>
-                                        <option value="1">2</option>
-                                        <option value="2">3</option>
-                                        <option value="3">4</option>
+                                    <Form.Select value={quantity}
+                                    onChange={e => setQuantity(e.target.value)}
+                                    size="lg" aria-label="Default select example">
+                                        <option>Choose</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
                                     </Form.Select>
                                 </ListGroup.Item>
                                 <ListGroup.Item>

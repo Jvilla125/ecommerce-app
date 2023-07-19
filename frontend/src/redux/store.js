@@ -5,14 +5,16 @@ import { composeWithDevTools } from "redux-devtools-extension"
 import thunk from "redux-thunk";
 
 // Reducers are in charge of returning a global changed state 
-import { counterReducer } from './reducers/cartReducers'
+import { cartReducer } from './reducers/cartReducers'
 import { userRegisterLoginReducer } from "./reducers/userReducers";
 
 // combineReducers allows you to return various reducers instead of one
 const reducer = combineReducers({
-    cart: counterReducer,
+    cart: cartReducer,
     userRegisterLogin: userRegisterLoginReducer
 })
+
+const cartItemsInLocalStorage = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
 
 const userInfoInLocalStorage = localStorage.getItem("userInfo")
     ? JSON.parse(localStorage.getItem("userInfo"))
@@ -22,7 +24,11 @@ const userInfoInLocalStorage = localStorage.getItem("userInfo")
 
 const INITIAL_STATE = {
     cart: {
-        value: 0,
+        cartItems: cartItemsInLocalStorage,
+        itemsCount: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((quantity, item) =>
+            Number(item.quantity) + quantity, 0) : 0,
+        cartSubtotal: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((price, item) => 
+        price + item.price * item.quantity, 0) : 0,
     },
     userRegisterLogin: { userInfo: userInfoInLocalStorage }
 }
