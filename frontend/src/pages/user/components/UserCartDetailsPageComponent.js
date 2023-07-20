@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert, ListGroup } from 'react-bootstrap';
 import CartItemComponent from '../../../components/CartItemComponent';
+import { useNavigate } from "react-router-dom";
 
 const UserCartDetailsPageComponent = ({ cartItems, itemsCount, cartSubtotal,
-    addToCart, removeFromCart, reduxDispatch, userInfo, getUser }) => {
+    addToCart, removeFromCart, reduxDispatch, userInfo, getUser, createOrder }) => {
 
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [userAddress, setUserAddress] = useState(false);
     const [missingAddress, setMissingAddress] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("pp");
+
+    const navigate = useNavigate();
 
     const changeCount = (productID, count) => {
         reduxDispatch(addToCart(productID, count))
@@ -37,7 +41,40 @@ const UserCartDetailsPageComponent = ({ cartItems, itemsCount, cartSubtotal,
             })
             .catch((er) => console.log(er.response.data.message ? er.response.data.
                 message : er.response.data));
-    }, [userInfo._id])
+    }, [userInfo._id]);
+
+    const orderHandler = () => {
+        const orderData = {
+            orderTotal: {
+                itemsCount: itemsCount,
+                cartSubtotal: cartSubtotal,
+            },
+            cartItems: cartItems.map(item => {
+                return {
+                    productID: item.productID,
+                    name: item.name,
+                    price: item.price,
+                    image: { path: item.image ? (item.image.path ?? null) : null },
+                    quantity: item.quantity,
+                    count: item.count,
+
+                }
+            }),
+            paymentMethod: paymentMethod,
+        }
+        createOrder(orderData)
+            .then(data => {
+                if (data) {
+                    navigate("/user/order-details/" + data._id);
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+
+
+    const choosePayment = (e) => {
+        setPaymentMethod(e.target.value)
+    }
 
     return (
         <Container fluid>
@@ -55,7 +92,7 @@ const UserCartDetailsPageComponent = ({ cartItems, itemsCount, cartSubtotal,
                         </Col>
                         <Col md={6}>
                             <h2>Payment method</h2>
-                            <Form.Select >
+                            <Form.Select onChange={choosePayment}>
                                 <option value="pp">
                                     Paypal
                                 </option>
@@ -110,8 +147,12 @@ const UserCartDetailsPageComponent = ({ cartItems, itemsCount, cartSubtotal,
                         </ListGroup.Item>
                         <ListGroup.Item >
                             <div className='d-grid gap-2'>
-                                <Button size='lg' variant='danger' type='button' disabled={buttonDisabled}>
-                                    Pay for the order
+                                <Button size='lg'
+                                    variant='danger'
+                                    type='button'
+                                    onClick={orderHandler}
+                                    disabled={buttonDisabled}>
+                                    Place order
                                 </Button>
                             </div>
 
