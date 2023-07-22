@@ -6,6 +6,9 @@ import { useSelector } from "react-redux"
 // make api request to database
 import axios from "axios";
 
+// npm install paypal
+import { loadScript } from "@paypal/paypal-js";
+
 const getOrder = async (orderId) => {
     const { data } = await axios.get("/api/orders/user/" + orderId);
     return data;
@@ -23,6 +26,7 @@ const UserOrderDetailsPage = () => {
             userInfo={userInfo}
             getUser={getUser}
             getOrder={getOrder}
+            loadScript={loadScript}
         />
     )
 }
