@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, Form, Alert, ListGroup, Button } from 'react-bootstrap';
 import CartItemComponent from '../../../components/CartItemComponent';
 import { useParams } from "react-router-dom";
@@ -14,6 +14,8 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder, loadScript
     const [isDelivered, setIsDelivered] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
 
+    const paypalContainer = useRef();
+    console.log(paypalContainer)
     const { id } = useParams(); // id is from App.js file
 
     useEffect(() => {
@@ -57,14 +59,15 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder, loadScript
 
     const orderHandler = () => {
         setButtonDisabled(true);
-        if(paymentMethod === "pp"){
+        if (paymentMethod === "pp") {
             setOrderButtonMessage("To pay for your order click one of the buttons below");
-            if(!isPaid){
+            if (!isPaid) {
                 loadScript({
                     "client-id":
-                    "AVH6hgJME87eBCY_GZ1t6UI-1Q9ciYQ2ng0ACIRfyJORPn__r_7q8aBlMex2NNvYZDyQl7SAyWyb4K_P"})
+                        "AVH6hgJME87eBCY_GZ1t6UI-1Q9ciYQ2ng0ACIRfyJORPn__r_7q8aBlMex2NNvYZDyQl7SAyWyb4K_P"
+                })
                     .then(paypal => {
-                        console.log(paypal)
+                        paypal.Buttons({}).render("#paypal-container-element");
                     })
                     .catch(err => {
                         console.error("failed to load the PayPal JS SDK script", err)
@@ -140,6 +143,10 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder, loadScript
                                 <Button size="lg" onClick={orderHandler} variant="danger" type="button" disabled={buttonDisabled}>
                                     {orderButtonMessage}
                                 </Button>
+                            </div>
+                            <div style={{ position: "relative", zIndex: 1}}>
+                                <div ref={paypalContainer} id="paypal-container-element"></div>
+
                             </div>
                         </ListGroup.Item>
                     </ListGroup>
