@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownButton, Button, InputGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
 import { logout } from '../redux/actions/userActions';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { getCategories } from '../redux/actions/categoryActions';
 
 const HeaderComponent = () => {
     const dispatch = useDispatch();
@@ -12,6 +12,10 @@ const HeaderComponent = () => {
     const { userInfo } = useSelector((state) => state.userRegisterLogin);
     // get itemsCount from redux global state
     const itemsCount = useSelector((state) => state.cart.itemsCount);
+
+    useEffect(() => {
+        dispatch(getCategories());
+    }, [dispatch])
 
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">

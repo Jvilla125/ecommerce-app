@@ -168,8 +168,7 @@ const adminGetProducts = async (req, res, next) => {
         const products = await Product.find({})
             .sort({ category: 1 })
             .select('name price category');
-
-        return res.json(products)
+            return res.json(products)
     } catch (error) {
         next(error)
     }
@@ -294,7 +293,7 @@ const adminDeleteProductImage = async (req, res, next) => {
         await Product.findOneAndUpdate(
             { _id: req.params.productId }, // find product with specified ID
             { $pull: { images: { path: imagePath } } } // if found pull specified path from images array
-            ).orFail();
+        ).orFail();
 
         return res.end() // if we do not want to return any data, we can use res.end()
     } catch (error) {

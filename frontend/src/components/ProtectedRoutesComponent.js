@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import UserChatComponent from './user/UserChatComponent';
-import LoginPage from '../pages/LoginPage';
-import axios from "axios";
+import { Outlet, Navigate } from "react-router-dom";
+import UserChatComponent from "./user/UserChatComponent";
 
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import LoginPage from "../pages/LoginPage";
 
 const ProtectedRoutesComponent = ({ admin }) => {
     const [isAuth, setIsAuth] = useState();
 
     useEffect(() => {
-        axios.get("/api/get-token").then(function (data){
-            if (data.data.token){
-                setIsAuth(data.data.token)
+        axios.get("/api/get-token").then(function (data) {
+            if (data.data.token) {
+                setIsAuth(data.data.token);
             }
             return isAuth;
         })
-    }, [isAuth]) // dependency is isAuth
+    }, [isAuth])
 
-    if (isAuth === undefined) return <LoginPage />
+    if (isAuth === undefined) return <LoginPage />;
 
     return isAuth && admin && isAuth !== "admin" ? (
         <Navigate to="/login" />
     ) : isAuth && admin ? (
-        <Outlet /> // Outlet allows the paths to be accessible to admin in App.js
+        <Outlet />
     ) : isAuth && !admin ? (
         <>
             <UserChatComponent />
@@ -31,7 +31,6 @@ const ProtectedRoutesComponent = ({ admin }) => {
     ) : (
         <Navigate to="/login" />
     )
-
 };
 
 export default ProtectedRoutesComponent;

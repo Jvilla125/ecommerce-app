@@ -7,11 +7,13 @@ import thunk from "redux-thunk";
 // Reducers are in charge of returning a global changed state 
 import { cartReducer } from './reducers/cartReducers'
 import { userRegisterLoginReducer } from "./reducers/userReducers";
+import { getCategoriesReducer } from "./reducers/categoryReducer";
 
 // combineReducers allows you to return various reducers instead of one
 const reducer = combineReducers({
     cart: cartReducer,
-    userRegisterLogin: userRegisterLoginReducer
+    userRegisterLogin: userRegisterLoginReducer,
+    getCategories: getCategoriesReducer,
 })
 
 const cartItemsInLocalStorage = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];

@@ -29,19 +29,17 @@ const LoginPageComponent = ({ loginUserApiRequest, reduxDispatch, setReduxUserSt
                 .then((res) => {
                     setLoginUserResponseState({ success: res.success, loading: false, error: "" })
                     // set login user data to global redux state to be available at all pages
-                    if (res.userLoggedIn){
-                        reduxDispatch(setReduxUserState(res.userLoggedIn)); 
+                    if (res.userLoggedIn) {
+                        reduxDispatch(setReduxUserState(res.userLoggedIn));
                     }
 
                     // if user !isAdmin then navigate to user page
-                    if (res.success === "user logged in" && !res.userLoggedIn.isAdmin)
-                        window.location.href = "/user"
-                        else window.location.href = "/admin/orders"
+                    if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) window.location.assign('/user')
+                    else window.location.assign('/admin/orders')
                 })// replace true means react deletes history of switching pages(can press back to login)
-                .catch((er) => setLoginUserResponseState({
-                    error: er.response.data.message ?
-                        er.response.data.message : er.response.data
-                }));
+                .catch((er) =>
+                    setLoginUserResponseState({ error: er.response.data.message ? er.response.data.message : er.response.data })
+                );
         }
         setValidated(true);
     };

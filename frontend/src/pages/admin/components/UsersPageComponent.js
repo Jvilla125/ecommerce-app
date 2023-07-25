@@ -15,7 +15,7 @@ const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
     const deleteHandler = async (userId) => {
         if (window.confirm("Are you sure?")) {
             const data = await deleteUser(userId)
-            if(data === 'User Removed'){
+            if (data === 'User Removed') {
                 setUserDeleted(!userDeleted)
             }
         }
@@ -27,13 +27,13 @@ const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
     useEffect(() => {
         const abctrl = new AbortController();
         fetchUsers(abctrl).then((res) => setUsers(res)).catch((err) =>
-        dispatch(logout())
-                // console.log(
-                //     err.response.data.message ? err.response.data.message : err.response.data
-                // )
-            );
+            dispatch(logout())
+            // console.log(
+            //     err.response.data.message ? err.response.data.message : err.response.data
+            // )
+        );
         return () => abctrl.abort();
-    }, [userDeleted]); 
+    }, [userDeleted]);
     // useEffect will be invoked if there is a change in state ex: [userDeleted]
 
 
@@ -64,8 +64,7 @@ const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
                                 <td>{user.lastName}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    {user.isAdmin ? <i className="bi bi-check-lg text-success"></i>
-                                        : <i className="bi bi-x-lg text-danger"></i>}
+                                    {user.isAdmin ? <i className="bi bi-check-lg text-success"></i> : <i className="bi bi-x-lg text-danger"></i>}
                                 </td>
                                 <td>
                                     <LinkContainer to={`/admin/edit-user/${user._id}`}>

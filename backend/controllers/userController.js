@@ -95,9 +95,13 @@ const loginUser = async (req, res, next) => {
             ).json({
                 success: "user logged in",
                 userLoggedIn: {
-                    _id: user._id, name: user.name, lastName: user.lastName,
-                    email: user.email, isAdmin: user.isAdmin, doNotLogout,
-                }
+                    _id: user._id, 
+                    name: user.name, 
+                    lastName: user.lastName,
+                    email: user.email, 
+                    isAdmin: user.isAdmin, 
+                    doNotLogout,
+                },
             });
         } else { // if not user, then return status 401
             return res.status(401).send("wrong credentials")
