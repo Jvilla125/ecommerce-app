@@ -15,6 +15,15 @@ const updateProductApiRequest = async (productId, formInputs) => {
     return data;
 }
 
+const uploadHandler = async (images, productId) => {
+    const formData = new FormData();
+
+    Array.from(images).forEach((image) => {
+        formData.append("images", image);
+    })
+    await axios.post("/api/products/admin/upload?productId=" + productId,
+    formData);
+}
 const AdminEditProductPage = () => {
 
     const { categories } = useSelector((state) => state.getCategories);
@@ -25,7 +34,7 @@ const AdminEditProductPage = () => {
     }
 
     return <EditProductPageComponent categories={categories} fetchProduct={fetchProduct} updateProductApiRequest={updateProductApiRequest} 
-    reduxDispatch={reduxDispatch} saveAttributeToCatDoc={saveAttributeToCatDoc} imageDeleteHandler={imageDeleteHandler} />;
+    reduxDispatch={reduxDispatch} saveAttributeToCatDoc={saveAttributeToCatDoc} imageDeleteHandler={imageDeleteHandler} uploadHandler={uploadHandler} />;
 };
 
 export default AdminEditProductPage;
