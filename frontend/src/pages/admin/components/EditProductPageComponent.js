@@ -12,7 +12,14 @@ const onHover = {
     transform: "scale(2.7)",
 }
 
-const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRequest, reduxDispatch, saveAttributeToCatDoc }) => {
+const EditProductPageComponent = ({
+    categories,
+    fetchProduct,
+    updateProductApiRequest,
+    reduxDispatch,
+    saveAttributeToCatDoc,
+    imageDeleteHandler,
+}) => {
     const [validated, setValidated] = useState(false);
     const [product, setProduct] = useState({})
     const [updateProductResponseState, setUpdateProductResponseState] = useState({
@@ -26,6 +33,7 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
     const [categoryChosen, setCategoryChosen] = useState("Choose category");
     const [newAttrKey, setNewAttrKey] = useState(false);
     const [newAttrValue, setNewAttrValue] = useState(false);
+    const [imageRemoved, setImageRemoved] = useState(false);
 
     const attrVal = useRef(null);
     const attrKey = useRef(null);
@@ -52,11 +60,12 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
     const { id } = useParams();
     const navigate = useNavigate();
 
+    // updates the product when the product id or imageremove is changed
     useEffect(() => {
         fetchProduct(id)
             .then((product) => setProduct(product))
             .catch((er) => console.log(er));
-    }, [id]);
+    }, [id, imageRemoved]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -363,7 +372,9 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                                 src={image.path ?? null}
                                                 fluid
                                             />
-                                            <i style={onHover} className="bi bi-x text-danger"></i>
+                                            <i style={onHover} 
+                                            onClick={() => imageDeleteHandler(image.path, id).then(data => setImageRemoved(!imageRemoved))}
+                                            className="bi bi-x text-danger"></i>
                                         </Col>
                                     ))}
                             </Row>

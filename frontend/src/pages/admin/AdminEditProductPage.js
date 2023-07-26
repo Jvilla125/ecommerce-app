@@ -19,9 +19,13 @@ const AdminEditProductPage = () => {
 
     const { categories } = useSelector((state) => state.getCategories);
     const reduxDispatch = useDispatch();
+    const imageDeleteHandler = async (imagePath, productId) => {
+        let encoded = encodeURIComponent(imagePath)
+        await axios.delete(`/api/products/admin/image/${encoded}/${productId}`);
+    }
 
     return <EditProductPageComponent categories={categories} fetchProduct={fetchProduct} updateProductApiRequest={updateProductApiRequest} 
-    reduxDispatch={reduxDispatch} saveAttributeToCatDoc={saveAttributeToCatDoc} />;
+    reduxDispatch={reduxDispatch} saveAttributeToCatDoc={saveAttributeToCatDoc} imageDeleteHandler={imageDeleteHandler} />;
 };
 
 export default AdminEditProductPage;
