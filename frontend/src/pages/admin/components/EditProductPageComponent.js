@@ -381,7 +381,7 @@ const EditProductPageComponent = ({
                                         </Col>
                                     ))}
                             </Row>
-                            <Form.Control  type="file" multiple onChange={e => {
+                            <Form.Control required type="file" multiple onChange={e => {
                                 setIsUploading("upload files in progress ...");
                                 uploadHandler(e.target.files, id)
                                 .then(data => {
