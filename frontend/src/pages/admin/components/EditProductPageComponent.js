@@ -1,25 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+
 const onHover = {
     cursor: "pointer",
     position: "absolute",
     left: "5px",
     top: "-10px",
     transform: "scale(2.7)",
-
 }
 
 const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRequest }) => {
-
-
     const [validated, setValidated] = useState(false);
     const [product, setProduct] = useState({})
-    const [updateProductResponseState, setUpdateProductResponseState] = useState({ message: '', error: '' });
+    const [updateProductResponseState, setUpdateProductResponseState] = useState({
+        message: '',
+        error: ''
+    });
+    //for select lists
+    const [attributesFromDb, setAttributesFromDb] = useState([]);
+    // for html table
+    const [attributesTable, setAttributesTable] = useState([]);
+    const [categoryChosen, setCategoryChosen] = useState("Choose category");
+    const [newAttrKey, setNewAttrKey] = useState(false);
+    const [newAttrValue, setNewAttrValue] = useState(false);
+
+    const attrVal = useRef(null);
+    const attrKey = useRef(null);
+    const createNewAttrKey = useRef(null);
+    const createNewAttrVal = useRef(null);
+
+    const setValuesForAttrFromDbSelectForm = (e) => {
+        if (e.target.value !== "Choose attribute") {
+            var selectedAttr = attributesFromDb.find((item) => item.key === e.target.value);
+            let valuesForAttrKeys = attrVal.current;
+            if (selectedAttr && selectedAttr.value.length > 0) {
+                while (valuesForAttrKeys.options.length) {
+                    valuesForAttrKeys.remove(0);
+                }
+                valuesForAttrKeys.options.add(new Option("Choose attribute value"));
+                selectedAttr.value.map(item => {
+                    valuesForAttrKeys.add(new Option(item));
+                    return "";
+                })
+            }
+        }
+    }
+
     const { id } = useParams();
     const navigate = useNavigate();
+
     useEffect(() => {
         fetchProduct(id)
             .then((product) => setProduct(product))
@@ -36,7 +68,7 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
             count: form.count.value,
             price: form.price.value,
             category: form.category.value,
-            attributesTable: []
+            attributesTable: attributesTable,
         }
         if (event.currentTarget.checkValidity() === true) {
             updateProductApiRequest(id, formInputs)
@@ -48,7 +80,94 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
         setValidated(true)
     }
 
+    useEffect(() => {
+        let categoryOfEditedProduct = categories.find((item) => item.name === product.category);
+        if (categoryOfEditedProduct) {
+            const mainCategoryOfEditedProduct = categoryOfEditedProduct.name.split("/")[0];
+            const mainCategoryOfEditedProductAllData = categories.find(
+                (categoryOfEditedProduct) => categoryOfEditedProduct.name ===
+                    mainCategoryOfEditedProduct);
+            if (mainCategoryOfEditedProductAllData &&
+                mainCategoryOfEditedProductAllData.attrs.length > 0) {
+                setAttributesFromDb(mainCategoryOfEditedProductAllData.attrs);
+            }
+        }
+        setCategoryChosen(product.category);
+        setAttributesTable(product.attrs);
+    }, [product])
 
+    const changeCategory = (e) => {
+        const highLevelCategory = e.target.value.split("/")[0];
+        const highLevelCategoryAllData = categories.find((cat) => cat.name ===
+            highLevelCategory);
+        if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
+            setAttributesFromDb(highLevelCategoryAllData.attrs);
+        } else {
+            setAttributesFromDb([]);
+        }
+        setCategoryChosen(e.target.value);
+    }
+
+    const attributeValueSelected = (e) => {
+        if (e.target.value !== "Choose attribute value") {
+            setAttributesTableWrapper(attrKey.current.value, e.target.value);
+        }
+    }
+
+    const setAttributesTableWrapper = (key, val) => {
+        setAttributesTable((attr) => {
+            if (attr.length !== 0) {
+                var keyExistsInOldTable = false;
+                let modifiedTable = attr.map(item => {
+                    if (item.key === key) {
+                        keyExistsInOldTable = true;
+                        item.value = val;
+                        return item;
+                    } else {
+                        return item;
+                    }
+                })
+                if (keyExistsInOldTable) return [...modifiedTable];
+                else return [...modifiedTable, { key: key, value: val }];
+            } else {
+                return [{ key: key, value: val }];
+            }
+        })
+    }
+
+    const deleteAttribute = (key) => {
+        setAttributesTable((table) => table.filter((item) => item.key !== key));
+    }
+
+    const checkKeyDown = (e) => {
+        if (e.code === "Enter") e.preventDefault();
+    }
+
+    const newAttrKeyHandler = (e) => {
+        e.preventDefault();
+        setNewAttrKey(e.target.value);
+        addNewAttributeManually(e);
+    }
+
+    const newAttrValueHandler = (e) => {
+        e.preventDefault();
+        setNewAttrValue(e.target.value);
+        addNewAttributeManually(e);
+    }
+
+    // 13 equals to "Enter"
+    const addNewAttributeManually = (e) => {
+        if (e.keyCode && e.keyCode === 13) {
+            if (newAttrKey && newAttrValue) {
+                setAttributesTableWrapper(newAttrKey, newAttrValue);
+                e.target.value = "";
+                createNewAttrKey.current.value = "";
+                createNewAttrVal.current.value = "";
+                setNewAttrKey(false);
+                setNewAttrValue(false);
+            }
+        }
+    }
 
     return (
         <Container>
@@ -60,7 +179,8 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                 </Col>
                 <Col md={6}>
                     <h1>Edit product</h1>
-                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                    <Form noValidate validated={validated} onSubmit={handleSubmit}
+                        onKeyDown={(e) => checkKeyDown(e)}>
                         <Form.Group className="mb-3" controlId="formBasicName">
                             <Form.Label>Name</Form.Label>
                             <Form.Control
@@ -70,7 +190,6 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                 defaultValue={product.name}
                             />
                         </Form.Group>
-
                         <Form.Group
                             className="mb-3"
                             controlId="exampleForm.ControlTextarea1"
@@ -108,8 +227,9 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                 required
                                 name="category"
                                 aria-label="Default select example"
+                                onChange={changeCategory}
                             >
-                                <option value="">Choose category</option>
+                                <option value="Choose category">Choose category</option>
                                 {categories.map((category, idx) => {
                                     return product.category === category.name ? (
                                         <option selected key={idx} value={category.name}>
@@ -123,55 +243,73 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                 })}
                             </Form.Select>
                         </Form.Group>
+                        {attributesFromDb.length > 0 && (
+                            <Row className="mt-5">
+                                <Col md={6}>
+                                    <Form.Group className="mb-3" controlId="formBasicAttributes">
+                                        <Form.Label>Choose atrribute and set value</Form.Label>
+                                        <Form.Select
+                                            name="atrrKey"
+                                            aria-label="Default select example"
+                                            ref={attrKey}
+                                            onChange={setValuesForAttrFromDbSelectForm}
+                                        >
+                                            <option>Choose attribute</option>
+                                            {attributesFromDb.map((item, idx) => (
+                                                <Fragment key={idx}>
+                                                    <option value={item.key}>{item.key}</option>
 
-                        <Row className="mt-5">
-                            <Col md={6}>
-                                <Form.Group className="mb-3" controlId="formBasicAttributes">
-                                    <Form.Label>Choose atrribute and set value</Form.Label>
-                                    <Form.Select
-                                        name="atrrKey"
-                                        aria-label="Default select example"
+                                                </Fragment>
+
+                                            ))}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group
+                                        className="mb-3"
+                                        controlId="formBasicAttributeValue"
                                     >
-                                        <option>Choose attribute</option>
-                                        <option value="red">color</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group
-                                    className="mb-3"
-                                    controlId="formBasicAttributeValue"
-                                >
-                                    <Form.Label>Attribute value</Form.Label>
-                                    <Form.Select
-                                        name="atrrVal"
-                                        aria-label="Default select example"
-                                    >
-                                        <option>Choose attribute value</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                        </Row>
+                                        <Form.Label>Attribute value</Form.Label>
+                                        <Form.Select
+                                            name="atrrVal"
+                                            aria-label="Default select example"
+                                            ref={attrVal}
+                                            onChange={attributeValueSelected}
+                                        >
+                                            <option>Choose attribute value</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                        )}
 
                         <Row>
-                            <Table hover>
-                                <thead>
-                                    <tr>
-                                        <th>Attribute</th>
-                                        <th>Value</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>attr key</td>
-                                        <td>attr value</td>
-                                        <td>
-                                            <CloseButton />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </Table>
+                            {attributesTable && attributesTable.length > 0 && (
+                                <Table hover>
+                                    <thead>
+                                        <tr>
+                                            <th>Attribute</th>
+                                            <th>Value</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {attributesTable.map((item, idx) => (
+                                            <tr key={idx}>
+                                                <td>{item.key}</td>
+                                                <td>{item.value}</td>
+                                                <td>
+                                                    <CloseButton onClick={() => deleteAttribute(item.key)} />
+                                                </td>
+                                            </tr>
+
+                                        ))}
+                                    </tbody>
+                                </Table>
+
+                            )}
                         </Row>
 
                         <Row>
@@ -179,10 +317,13 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                                     <Form.Label>Create new attribute</Form.Label>
                                     <Form.Control
-                                        disabled={false}
+                                        ref={createNewAttrKey}
+                                        disabled={categoryChosen === "Choose category"}
                                         placeholder="first choose or create category"
-                                        name="newAttrValue"
+                                        name="newAttrKey"
                                         type="text"
+                                        onKeyUp={newAttrKeyHandler}
+                                        required={newAttrValue}
                                     />
                                 </Form.Group>
                             </Col>
@@ -193,18 +334,20 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
                                 >
                                     <Form.Label>Attribute value</Form.Label>
                                     <Form.Control
-                                        disabled={false}
+                                        ref={createNewAttrVal}
+                                        disabled={categoryChosen === "Choose category"}
                                         placeholder="first choose or create category"
-                                        required={true}
+                                        required={newAttrKey}
                                         name="newAttrValue"
                                         type="text"
+                                        onKeyUp={newAttrValueHandler}
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
 
-                        <Alert variant="primary">
-                            After typing attribute key and value press enterr on one of the
+                        <Alert show={newAttrKey && newAttrValue} variant="primary">
+                            After typing attribute key and value press enter on one of the
                             field
                         </Alert>
 
