@@ -12,7 +12,7 @@ const onHover = {
     transform: "scale(2.7)",
 }
 
-const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRequest }) => {
+const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRequest, reduxDispatch, saveAttributeToCatDoc }) => {
     const [validated, setValidated] = useState(false);
     const [product, setProduct] = useState({})
     const [updateProductResponseState, setUpdateProductResponseState] = useState({
@@ -159,6 +159,7 @@ const EditProductPageComponent = ({ categories, fetchProduct, updateProductApiRe
     const addNewAttributeManually = (e) => {
         if (e.keyCode && e.keyCode === 13) {
             if (newAttrKey && newAttrValue) {
+                reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChosen));
                 setAttributesTableWrapper(newAttrKey, newAttrValue);
                 e.target.value = "";
                 createNewAttrKey.current.value = "";
