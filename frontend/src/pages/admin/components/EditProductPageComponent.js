@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { changeCategory } from './utils/utils';
+import { changeCategory, setValuesForAttrFromDbSelectForm, setAttributesTableWrapper} from './utils/utils';
 
 const onHover = {
     cursor: "pointer",
@@ -45,23 +45,6 @@ const EditProductPageComponent = ({
     const attrKey = useRef(null);
     const createNewAttrKey = useRef(null);
     const createNewAttrVal = useRef(null);
-
-    const setValuesForAttrFromDbSelectForm = (e) => {
-        if (e.target.value !== "Choose attribute") {
-            var selectedAttr = attributesFromDb.find((item) => item.key === e.target.value);
-            let valuesForAttrKeys = attrVal.current;
-            if (selectedAttr && selectedAttr.value.length > 0) {
-                while (valuesForAttrKeys.options.length) {
-                    valuesForAttrKeys.remove(0);
-                }
-                valuesForAttrKeys.options.add(new Option("Choose attribute value"));
-                selectedAttr.value.map(item => {
-                    valuesForAttrKeys.add(new Option(item));
-                    return "";
-                })
-            }
-        }
-    }
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -113,29 +96,8 @@ const EditProductPageComponent = ({
 
     const attributeValueSelected = (e) => {
         if (e.target.value !== "Choose attribute value") {
-            setAttributesTableWrapper(attrKey.current.value, e.target.value);
+            setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
         }
-    }
-
-    const setAttributesTableWrapper = (key, val) => {
-        setAttributesTable((attr) => {
-            if (attr.length !== 0) {
-                var keyExistsInOldTable = false;
-                let modifiedTable = attr.map(item => {
-                    if (item.key === key) {
-                        keyExistsInOldTable = true;
-                        item.value = val;
-                        return item;
-                    } else {
-                        return item;
-                    }
-                })
-                if (keyExistsInOldTable) return [...modifiedTable];
-                else return [...modifiedTable, { key: key, value: val }];
-            } else {
-                return [{ key: key, value: val }];
-            }
-        })
     }
 
     const deleteAttribute = (key) => {
@@ -163,7 +125,7 @@ const EditProductPageComponent = ({
         if (e.keyCode && e.keyCode === 13) {
             if (newAttrKey && newAttrValue) {
                 reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChosen));
-                setAttributesTableWrapper(newAttrKey, newAttrValue);
+                setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
                 e.target.value = "";
                 createNewAttrKey.current.value = "";
                 createNewAttrVal.current.value = "";
@@ -257,7 +219,7 @@ const EditProductPageComponent = ({
                                             name="atrrKey"
                                             aria-label="Default select example"
                                             ref={attrKey}
-                                            onChange={setValuesForAttrFromDbSelectForm}
+                                            onChange={(e) => setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
                                         >
                                             <option>Choose attribute</option>
                                             {attributesFromDb.map((item, idx) => (

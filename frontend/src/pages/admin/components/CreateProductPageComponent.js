@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { changeCategory } from './utils/utils';
+import { changeCategory, setValuesForAttrFromDbSelectForm, setAttributesTableWrapper } from './utils/utils';
 
 const CreateProductPageComponent = ({ createProductApiRequest,
     uploadImagesApiRequest,
@@ -23,6 +23,8 @@ const CreateProductPageComponent = ({ createProductApiRequest,
     });
     const [categoryChosen, setCategoryChosen] = useState("Choose category");
 
+    const attrVal = useRef(null);
+    const attrKey = useRef(null);
 
     const navigate = useNavigate();
 
@@ -73,8 +75,8 @@ const CreateProductPageComponent = ({ createProductApiRequest,
             reduxDispatch(newCategory(e.target.value));
             setTimeout(() => {
                 let element = document.getElementById("cats");
-                element.value = e.target.value;
                 setCategoryChosen(e.target.value);
+                element.value = e.target.value;
                 e.target.value = ""
             }, 200)
         }
@@ -85,6 +87,16 @@ const CreateProductPageComponent = ({ createProductApiRequest,
         let element = document.getElementById("cats");
         reduxDispatch(deleteCategory(element.value));
         setCategoryChosen("Choose category")
+    }
+
+    const attributeValueSelected = (e) => {
+        if (e.target.value !== "Choose attribute value") {
+            setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
+        }
+    }
+
+    const deleteAttribute = (key) => {
+        setAttributesTable((table) => table.filter((item) => item.key !== key));
     }
 
     return (
@@ -148,7 +160,12 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                                 <Col md={6}>
                                     <Form.Group className='mb-3' controlId="formBasicAttributes">
                                         <Form.Label>Choose attribute and set value</Form.Label>
-                                        <Form.Select name="atrrKey" aria-label="Default select example">
+                                        <Form.Select
+                                            name="atrrKey"
+                                            aria-label="Default select example"
+                                            ref={attrKey}
+                                            onChange={(e) => setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
+                                        >
                                             <option>Choose attribute</option>
                                             {attributesFromDb.map((item, idx) => (
                                                 <React.Fragment key={idx}>
@@ -161,7 +178,12 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                                 <Col md={6}>
                                     <Form.Group className='mb-3' controlId="formBasicAttributeValue">
                                         <Form.Label>Attribute value</Form.Label>
-                                        <Form.Select name="atrrKey" aria-label="Default select example">
+                                        <Form.Select
+                                            onChange={attributeValueSelected}
+                                            name="atrrVal"
+                                            aria-label="Default select example"
+                                            ref={attrVal}
+                                        >
                                             <option>Choose attribute value</option>
                                         </Form.Select>
                                     </Form.Group>
@@ -184,7 +206,7 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                                                 <td>{item.key}</td>
                                                 <td>{item.value}</td>
                                                 <td>
-                                                    <CloseButton />
+                                                    <CloseButton onClick={() => deleteAttribute(item.key)} />
                                                 </td>
                                             </tr>
                                         ))}
