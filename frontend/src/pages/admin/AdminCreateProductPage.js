@@ -14,7 +14,8 @@ const uploadImagesApiRequest = async (images, productId) => {
     await axios.post("/api/products/admin/upload?productId=" + productId, formData);
 }
 
-const uploadImagesCloudinaryApiRequest = (images) => {
+// this function uploads images to a separate website
+const uploadImagesCloudinaryApiRequest = (images, productId) => {
     // settings in cloudinary
     const url = "https://api.cloudinary.com/v1_1/dg4sfz4b5/image/upload";
     const formData = new FormData();
@@ -31,7 +32,8 @@ const uploadImagesCloudinaryApiRequest = (images) => {
             return response.json();
         })
         .then(data => {
-            console.log(data);
+            // make an api post request to the database using the successful url from cloudinary
+            axios.post("/api/products/admin/upload?cloudinary=true&productId=" + productId, data);
         })
     }
 }
