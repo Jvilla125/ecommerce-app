@@ -48,23 +48,31 @@ const HeaderComponent = () => {
                                 </Nav.Link>
                             </LinkContainer>
                         ) : userInfo.name && !userInfo.isAdmin ? (
-                            <NavDropdown title={`${userInfo.name} ${userInfo.lastName}`} id="collasible-nav-dropdown">
-                                {/* eventKey lets users know that we are currently on that page by highlighting it */}
-                                <NavDropdown.Item eventKey="/user/my-orders" as={Link} to="/user/my-orders">My orders</NavDropdown.Item>
-                                <NavDropdown.Item eventKey="/user/" as={Link} to="/user">My Profile</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => dispatch(logout())}>Logout</NavDropdown.Item>
+                            <NavDropdown
+                                title={`${userInfo.name} ${userInfo.lastName}`}
+                                id="collasible-nav-dropdown"
+                            >
+                                <NavDropdown.Item
+                                    eventKey="/user/my-orders"
+                                    as={Link}
+                                    to="/user/my-orders"
+                                >
+                                    My orders
+                                </NavDropdown.Item>
+                                <NavDropdown.Item eventKey="/user" as={Link} to="/user">
+                                    My profile
+                                </NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => dispatch(logout())}>
+                                    Logout
+                                </NavDropdown.Item>
                             </NavDropdown>
                         ) : (
                             <>
                                 <LinkContainer to="/login">
-                                    <Nav.Link >
-                                        Login
-                                    </Nav.Link>
+                                    <Nav.Link>Login</Nav.Link>
                                 </LinkContainer>
                                 <LinkContainer to="/register">
-                                    <Nav.Link >
-                                        Register
-                                    </Nav.Link>
+                                    <Nav.Link>Register</Nav.Link>
                                 </LinkContainer>
                             </>
                         )}

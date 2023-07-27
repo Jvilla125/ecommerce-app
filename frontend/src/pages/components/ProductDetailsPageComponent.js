@@ -6,13 +6,19 @@ import ImageZoom from 'js-image-zoom';
 import { useParams } from 'react-router-dom';
 
 
-const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getProductDetails }) => {
+const ProductDetailsPageComponent = ({ addToCartReduxAction,
+    reduxDispatch,
+    getProductDetails,
+    userInfo,
+    writeReviewApiRequest
+}) => {
     const { id } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [showCartMessage, setShowCartMessage] = useState(false)
     const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [productReviewed, setProductReviewed] = useState(false);
 
     const addToCartHandler = () => {
         reduxDispatch(addToCartReduxAction(id, quantity));
@@ -31,7 +37,7 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getP
             };
             product.images.map((image, id) => new ImageZoom(document.getElementById(`imageId${id + 1}`), options));
         }
-        
+
     });
 
     useEffect(() => {
@@ -41,8 +47,25 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getP
                 setLoading(false);
             })
             .catch((er) => setError(er.response.data.message ? er.response.data.message : er.response.data));
-    }, [])
+    }, [id, productReviewed])
 
+    const sendReviewHandler = (e) => {
+        e.preventDefault();
+        const form = e.currentTarget.elements;
+        const formInputs = {
+            comment: form.comment.value,
+            rating: form.rating.value,
+        }
+        if (e.currentTarget.checkValidity() === true) {
+            writeReviewApiRequest(product._id, formInputs)
+            .then(data => {
+                if(data === "review created"){
+                    setProductReviewed("You successfully reviewed the page!");
+                }
+            })
+            .catch((er) => setProductReviewed(er.response.data.message ? er.response.data.message : er.response.data))
+        }
+    }
 
     return (
         <Container>
@@ -67,7 +90,7 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getP
                                             src={`${image.path ?? null}`}
                                         />
                                     </div>
-                                        <br />
+                                    <br />
                                 </div>
                             )) : null}
                         </Col >
@@ -100,13 +123,18 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getP
                                         </ListGroup.Item>
                                         <ListGroup.Item>
                                             Quantity:
-                                            <Form.Select value={quantity}
+                                            <Form.Select
+                                                value={quantity}
                                                 onChange={e => setQuantity(e.target.value)}
-                                                size="lg" aria-label="Default select example">
-                                                <option>Choose</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
+                                                size="lg"
+                                                aria-label="Default select example"
+                                            >
+                                                {/* get the quantity from database */}
+                                                {[...Array(product.count).keys()].map(x => (
+                                                    <option key={x + 1} value={x + 1}>
+                                                        {x + 1}
+                                                    </option>
+                                                ))}
                                             </Form.Select>
                                         </ListGroup.Item>
                                         <ListGroup.Item>
@@ -119,37 +147,43 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction, reduxDispatch, getP
                                 <Col className="mt-5">
                                     <h5>REVIEWS</h5>
                                     <ListGroup variant="flush">
-                                        {Array.from({ length: 10 }).map((item, idx) => (
+                                        {product.reviews && product.reviews.map((review, idx) => (
                                             <ListGroup.Item key={idx}>
-                                                John Doe <br />
-                                                <Rating readonly size={20} initialValue={4} />
+                                                {review.user.name}<br />
+                                                <Rating readonly size={20} initialValue={review.rating} />
                                                 <br />
-                                                20-09-2001 <br />
-                                                Porta ac consectetur ac Lorem ipsum dolor, sit amet
-                                                consectetur adipisicing elit. Perferendis, illo.
+                                                {review.createdAt.substring(0, 10)} <br />
+                                                {review.comment}
                                             </ListGroup.Item>
                                         ))}
                                     </ListGroup>
                                 </Col>
                             </Row>
                             <hr />
-                            <Alert variant="danger">Login first to write a review</Alert>
-                            <Form>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            {/* Check userInfo from reduxState to determine if a user is logged in */}
+                            {!userInfo.name && <Alert variant="danger">Login first to write a review</Alert>}
+                            <Form onSubmit={sendReviewHandler}>
+                                <Form.Group
+                                    className="mb-3"
+                                    controlId="exampleForm.ControlInput1"
+                                >
                                     <Form.Label>Write a review</Form.Label>
-                                    <Form.Control as="textarea" rows={3} />
+                                    <Form.Control name="comment" required as="textarea"
+                                        disabled={!userInfo.name} rows={3} />
                                 </Form.Group>
-                                <Form.Select aria-label="Default select example">
-                                    <option>Your rating</option>
+                                <Form.Select name="rating" required disabled={!userInfo.name}
+                                    aria-label="Default select example">
+                                    <option value="">Your rating</option>
                                     <option value="5">5 (very good)</option>
                                     <option value="4">4 (good)</option>
                                     <option value="3">3 (average)</option>
                                     <option value="2">2 (bad)</option>
                                     <option value="1">1 (awful)</option>
                                 </Form.Select>
-                                <Button className="mb-3 mt-3" variant="primary">
+                                <Button disabled={!userInfo.name} type="submit" className="mb-3 mt-3" variant="primary">
                                     Submit
                                 </Button>
+                                {productReviewed}
                             </Form>
                         </Col>
                     </>

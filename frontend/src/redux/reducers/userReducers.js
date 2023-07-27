@@ -7,10 +7,10 @@ export const userRegisterLoginReducer = (state = {}, action) => {
         case LOGIN_USER:
             return {
                 ...state,
-                userInfo: action.payload,
+                userInfo: action.payload
             }
-            case LOGOUT_USER:
-                return {};
+        case LOGOUT_USER:
+            return {};
         default:
             return state
     }

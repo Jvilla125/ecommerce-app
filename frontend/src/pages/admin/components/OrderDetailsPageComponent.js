@@ -33,11 +33,11 @@ const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
             }
             setCartItems(order.cartItems)
         })
-            .catch(er => 
-                dispatch(logout())
+        .catch((er) =>
+      dispatch(logout()))
                 // console.log(er.response.data.message ? er.response.data.message
                 // : er.response.data))
-            )
+            
     }, [isDelivered, id])
 
     return (
