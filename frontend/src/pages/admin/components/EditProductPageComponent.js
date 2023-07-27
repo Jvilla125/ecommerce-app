@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { changeCategory } from './utils/utils';
 
 const onHover = {
     cursor: "pointer",
@@ -109,18 +110,6 @@ const EditProductPageComponent = ({
         setCategoryChosen(product.category);
         setAttributesTable(product.attrs);
     }, [product])
-
-    const changeCategory = (e) => {
-        const highLevelCategory = e.target.value.split("/")[0];
-        const highLevelCategoryAllData = categories.find((cat) => cat.name ===
-            highLevelCategory);
-        if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
-            setAttributesFromDb(highLevelCategoryAllData.attrs);
-        } else {
-            setAttributesFromDb([]);
-        }
-        setCategoryChosen(e.target.value);
-    }
 
     const attributeValueSelected = (e) => {
         if (e.target.value !== "Choose attribute value") {
@@ -242,7 +231,8 @@ const EditProductPageComponent = ({
                                 required
                                 name="category"
                                 aria-label="Default select example"
-                                onChange={changeCategory}
+                                // pass e (target.value) and props to changeCategory that was imported
+                                onChange={(e) => changeCategory(e, categories, setAttributesFromDb, setCategoryChosen)}
                             >
                                 <option value="Choose category">Choose category</option>
                                 {categories.map((category, idx) => {
@@ -273,9 +263,7 @@ const EditProductPageComponent = ({
                                             {attributesFromDb.map((item, idx) => (
                                                 <Fragment key={idx}>
                                                     <option value={item.key}>{item.key}</option>
-
                                                 </Fragment>
-
                                             ))}
                                         </Form.Select>
                                     </Form.Group>
