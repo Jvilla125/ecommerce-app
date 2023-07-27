@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, FormGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const EditUserPageComponent = ({ updateUserApiRequest }) => {
+const EditUserPageComponent = ({ updateUserApiRequest, fetchUser }) => {
     const [validated, setValidated] = useState(false);
+    const [user, setUser] = useState([]);
+    const [isAdminState, setIsAdminState] = useState(false);
+    const [updateUserResponseState, setUpdateUserResponseState] = useState({
+        message: "", error: ""
+    })
+
+    const { id } = useParams(); //reads id from url 
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -14,10 +24,27 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
         const email = form.email.value;
         const isAdmin = form.isAdmin.checked;
         if (event.currentTarget.checkValidity() === true) {
-            updateUserApiRequest(name, lastName, email, isAdmin);
+            updateUserApiRequest(id, name, lastName, email, isAdmin)
+                .then(data => {
+                    if (data === "user updated") {
+                        navigate("/admin/users");
+                    }
+                })
+                .catch(er => {
+                    setUpdateUserResponseState({ error: er.response.data.message ? er.response.data.message : er.response.data })
+                })
         }
         setValidated(true)
     }
+
+    useEffect(() => {
+        fetchUser(id)
+            .then(data => {
+                setUser(data);
+                setIsAdminState(data.isAdmin)
+            })
+            .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
+    }, [id])
 
     return (
         <Container>
@@ -32,22 +59,44 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
                         <FormGroup className='mb-3' controlId='formBasicFirstName'>
                             <Form.Label>First name</Form.Label>
-                            <Form.Control name='name' required type='text' defaultValue='John' />
+                            <Form.Control
+                                name='name'
+                                required
+                                type='text'
+                                defaultValue={user.name}
+                            />
                         </FormGroup>
                         <FormGroup className='mb-3' controlId='formBasicLastName'>
                             <Form.Label>Last Name</Form.Label>
-                            <Form.Control name='lastName' required typee='text' defaultValue="Doe" />
+                            <Form.Control
+                                name='lastName'
+                                required
+                                type='text'
+                                defaultValue={user.lastName}
+                            />
                         </FormGroup>
                         <FormGroup className='mb-3' controlId='formBasicEmail'>
                             <Form.Label>Email</Form.Label>
-                            <Form.Control name='email' required type='email' defaultValue="email@email.com" />
+                            <Form.Control
+                                name='email'
+                                required
+                                type='email'
+                                defaultValue={user.email}
+                            />
                         </FormGroup>
                         <Form.Group className='mb-3' controlId='formBasicCheckbox'>
-                            <Form.Check name="isAdmin" type="checkbox" label="Is admin" />
+                            <Form.Check
+                                name="isAdmin"
+                                type="checkbox"
+                                label="Is admin"
+                                checked={isAdminState}
+                                onChange={(e) => setIsAdminState(e.target.checked)}
+                            />
                         </Form.Group>
                         <Button variant='primary' type="submit">
                             Update
                         </Button>
+                        {updateUserResponseState.error}
                     </Form>
                 </Col>
             </Row>
