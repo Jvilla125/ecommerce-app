@@ -168,7 +168,7 @@ const adminGetProducts = async (req, res, next) => {
         const products = await Product.find({})
             .sort({ category: 1 })
             .select('name price category');
-            return res.json(products)
+        return res.json(products)
     } catch (error) {
         next(error)
     }
@@ -236,12 +236,12 @@ const adminUpdateProduct = async (req, res, next) => {
 }
 
 const adminUpload = async (req, res, next) => {
-    if (req.query.cloudinary === "true"){
-        try{
+    if (req.query.cloudinary === "true") {
+        try {
             let product = await Product.findById(req.query.productId).orFail();
-            product.images.push({path: req.body.url});
+            product.images.push({ path: req.body.url });
             await product.save();
-        } catch (err){
+        } catch (err) {
             next(err);
         }
         return
@@ -291,7 +291,17 @@ const adminUpload = async (req, res, next) => {
 const adminDeleteProductImage = async (req, res, next) => {
     try {
         // req.params.imagePath is from productRoutes.js line 19 "/admin/image/:imagePath/:productId"
-        const imagePath = decodeURIComponent(req.params.imagePath)
+        const imagePath = decodeURIComponent(req.params.imagePath);
+        if (req.query.cloudinary === "true") {
+            try {
+                await Product.findOneAndUpdate({ _id: req.params.productId}, {
+                    $pull: {images: {path: imagePath }}}).orFail();
+                    return res.end();
+            } catch (er) {
+                next(er)
+            }
+            return
+        }
         const path = require("path")
         const finalPath = path.resolve("../frontend/public") + imagePath;
         const fs = require("fs") // built in node file system 
