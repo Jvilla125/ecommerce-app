@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Container, Image, ListGroup, Form, Button, Alert } from "react-bootstrap"
 import AddedToCartMessageComponent from '../../components/AddedToCartMessageComponent';
 import { Rating } from 'react-simple-star-rating';
@@ -19,6 +19,8 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction,
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [productReviewed, setProductReviewed] = useState(false);
+
+    const messageEndRef = useRef(null);
 
     const addToCartHandler = () => {
         reduxDispatch(addToCartReduxAction(id, quantity));
@@ -41,6 +43,15 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction,
     });
 
     useEffect(() => {
+        if (productReviewed) {
+            setTimeout(() => {
+                messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+            }, 200)
+        }
+    }, [productReviewed])
+
+    // get productDetails and update product state
+    useEffect(() => {
         getProductDetails(id)
             .then(data => {
                 setProduct(data);
@@ -48,6 +59,7 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction,
             })
             .catch((er) => setError(er.response.data.message ? er.response.data.message : er.response.data));
     }, [id, productReviewed])
+
 
     const sendReviewHandler = (e) => {
         e.preventDefault();
@@ -58,14 +70,16 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction,
         }
         if (e.currentTarget.checkValidity() === true) {
             writeReviewApiRequest(product._id, formInputs)
-            .then(data => {
-                if(data === "review created"){
-                    setProductReviewed("You successfully reviewed the page!");
-                }
-            })
-            .catch((er) => setProductReviewed(er.response.data.message ? er.response.data.message : er.response.data))
+                .then(data => {
+                    if (data === "review created") {
+                        setProductReviewed("You successfully reviewed the page!");
+                    }
+                })
+                .catch((er) => setProductReviewed(er.response.data.message ? er.response.data.message : er.response.data))
         }
     }
+
+
 
     return (
         <Container>
@@ -156,6 +170,8 @@ const ProductDetailsPageComponent = ({ addToCartReduxAction,
                                                 {review.comment}
                                             </ListGroup.Item>
                                         ))}
+                                        <div ref={messageEndRef} />
+
                                     </ListGroup>
                                 </Col>
                             </Row>
