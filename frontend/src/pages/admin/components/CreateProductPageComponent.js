@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, FormGroup, Button, CloseButton, Table, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const CreateProductPageComponent = ({createProductApiRequest, uploadImagesApiRequest}) => {
-
+const CreateProductPageComponent = ({ createProductApiRequest, 
+    uploadImagesApiRequest, uploadImagesCloudinaryApiRequest }) => {
     const [validated, setValidated] = useState(false);
     const [attributesTable, setAttributesTable] = useState([]);
+    const [images, setImages] = useState(false);
+    const [isCreating, setIsCreating] = useState("");
+    const [createProductResponseState, setCreateProductResponseState] = useState({
+        message: "",
+        error: ""
+    });
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -21,14 +29,29 @@ const CreateProductPageComponent = ({createProductApiRequest, uploadImagesApiReq
         }
         if (event.currentTarget.checkValidity() === true) {
             createProductApiRequest(formInputs)
-            .then(data => {
-                console.log(data)
-            })
-            .catch(er => {
-                console.log(er.response.data.message ? er.response.data.message : er.response.data);
-            })
+                .then(data => {
+                    if (images) {
+                        // to do: change to !==
+                        if (process.env.NODE_ENV === "production"){
+                            uploadImagesApiRequest(images, data.productId)
+                            .then(res => {})
+                            .catch((er) => setIsCreating(er.response.data.message ? er.response.data.message : er.response.data))
+                        } else {
+                            uploadImagesCloudinaryApiRequest(images);
+                        }
+                    }
+                    if (data.message === "product created") navigate("/admin/products")
+                })
+                .catch(er => {
+                    setCreateProductResponseState({ error: er.response.data.message ? er.response.data.message : er.response.data});
+                })
         }
         setValidated(true)
+    }
+
+    const uploadHandler = (images) => {
+        setImages(images);
+
     }
 
     return (
@@ -143,11 +166,14 @@ const CreateProductPageComponent = ({createProductApiRequest, uploadImagesApiReq
                         </Alert>
                         <FormGroup controlId='formFileMultiple' className='mb-3 mt-3'>
                             <Form.Label>Images</Form.Label>
-                            <Form.Control required type="file" multiple />
+                            <Form.Control required type="file" multiple onChange={(e) =>
+                                uploadHandler(e.target.files)} />
+                                {isCreating}
                         </FormGroup>
                         <Button variant='primary' type="submit">
                             Create
                         </Button>
+                        {createProductResponseState.error ?? ""}
                     </Form>
                 </Col>
             </Row>
