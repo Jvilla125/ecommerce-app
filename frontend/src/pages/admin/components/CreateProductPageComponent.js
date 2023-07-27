@@ -11,6 +11,7 @@ const CreateProductPageComponent = ({ createProductApiRequest,
     reduxDispatch,
     newCategory,
     deleteCategory,
+    saveAttributeToCatDoc
 }) => {
     const [validated, setValidated] = useState(false);
     const [attributesTable, setAttributesTable] = useState([]);
@@ -22,9 +23,13 @@ const CreateProductPageComponent = ({ createProductApiRequest,
         error: ""
     });
     const [categoryChosen, setCategoryChosen] = useState("Choose category");
+    const [newAttrKey, setNewAttrKey] = useState(false);
+    const [newAttrValue, setNewAttrValue] = useState(false);
 
     const attrVal = useRef(null);
     const attrKey = useRef(null);
+    const createNewAttrKey = useRef(null);
+    const createNewAttrVal = useRef(null);
 
     const navigate = useNavigate();
 
@@ -99,6 +104,37 @@ const CreateProductPageComponent = ({ createProductApiRequest,
         setAttributesTable((table) => table.filter((item) => item.key !== key));
     }
 
+    const newAttrKeyHandler = (e) => {
+        e.preventDefault();
+        setNewAttrKey(e.target.value);
+        addNewAttributeManually(e);
+    }
+
+    const newAttrValueHandler = (e) => {
+        e.preventDefault();
+        setNewAttrValue(e.target.value);
+        addNewAttributeManually(e);
+    }
+
+    const addNewAttributeManually = (e) => {
+        if (e.keyCode && e.keyCode === 13) {
+            if (newAttrKey && newAttrValue) {
+                reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChosen));
+                setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
+                e.target.value = "";
+                createNewAttrKey.current.value = "";
+                createNewAttrVal.current.value = "";
+                setNewAttrKey(false);
+                setNewAttrValue(false);
+            }
+        }
+    }
+
+    //prevent the website from reloading the page
+    const checkKeyDown = (e) => {
+        if (e.code === "Enter") e.preventDefault();
+    }
+
     return (
         <Container>
             <Row className="justify-content-md-center mt-5">
@@ -109,7 +145,8 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                 </Col>
                 <Col md={6}>
                     <h1> Create a new product</h1>
-                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                    <Form noValidate validated={validated} onSubmit={handleSubmit}
+                    onKeyDown={(e) => checkKeyDown(e)}>
                         <FormGroup className='mb-3' controlId='formBasicName'>
                             <Form.Label>Name</Form.Label>
                             <Form.Control name='name' required type='text' />
@@ -221,10 +258,12 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                                 <Form.Group className='mb-3' controlId="formBasicNewAttribute">
                                     <Form.Label> Create new attribute </Form.Label>
                                     <Form.Control
+                                        ref={createNewAttrKey}
                                         disabled={["", "Choose category"].includes(categoryChosen)}
                                         placeholder='first choose or create category'
                                         name='newAttrValue'
                                         type='text'
+                                        onKeyUp={newAttrKeyHandler}
                                     />
                                 </Form.Group>
                             </Col>
@@ -232,16 +271,18 @@ const CreateProductPageComponent = ({ createProductApiRequest,
                                 <Form.Group className='mb-3' controlId="formBasicNewAttributeValue">
                                     <Form.Label> Attribute value</Form.Label>
                                     <Form.Control
+                                        ref={createNewAttrVal}
                                         disabled={["", "Choose category"].includes(categoryChosen)}
-                                        required={true}
+                                        required={newAttrKey}
                                         placeholder='first choose or create category'
                                         name='newAttrValue'
                                         type='text'
+                                        onKeyUp={newAttrValueHandler}
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Alert variant='primary'>
+                        <Alert show={newAttrKey && newAttrValue} variant='primary'>
                             After typing attribute key and value press enter on one of the field
                         </Alert>
                         <FormGroup controlId='formFileMultiple' className='mb-3 mt-3'>
