@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
+import { useParams } from "react-router-dom"
+
 // Import /filterQueryResultsOptions/Components
 import PriceFilterComponent from "../../components/filterQueryResultOptions/PriceFilterComponent";
 import RatingFilterComponent from "../../components/filterQueryResultOptions/RatingFilterComponent";
@@ -11,10 +13,31 @@ import ProductForListComponent from "../../components/ProductForListComponent";
 import SortOptionsComponent from "../../components/SortOptionsComponent";
 
 
-const ProductListPageComponent = ({ getProducts }) => {
+
+const ProductListPageComponent = ({ getProducts, categories }) => {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [attrsFilter, setAttrsFilter] = useState([]);
+    const [attrsFromFilter, setAttrsFromFilter] = useState([]); // pass a prop to AttributesFilterComponent.js
+
+    console.log(attrsFromFilter)
+
+    const { categoryName } = useParams() || ""; // name is from App.js :categoryname
+
+    // if there is a categoryName in the link
+    useEffect(() => {
+        if (categoryName) {
+            let categoryAllData = categories.find((item) => item.name === categoryName.replaceAll(",", "/"));
+            if (categoryAllData) {
+                let mainCategory = categoryAllData.name.split("/")[0];
+                let index = categories.findIndex((item) => item.name === mainCategory);
+                setAttrsFilter(categories[index].attrs);
+            }
+        } else {
+            setAttrsFilter([]);
+        }
+    }, [categoryName, categories])
 
     useEffect(() => {
         getProducts()
@@ -37,7 +60,10 @@ const ProductListPageComponent = ({ getProducts }) => {
                         <ListGroup.Item> FILTER: <br /> <PriceFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><RatingFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><CategoryFilterComponent /></ListGroup.Item>
-                        <ListGroup.Item><AttributesFilterComponent /></ListGroup.Item>
+                        <ListGroup.Item>
+                            <AttributesFilterComponent attrsFilter={attrsFilter}
+                                setAttrsFromFilter={setAttrsFromFilter} />
+                        </ListGroup.Item>
                         <ListGroup.Item>
                             <Button variant="primary">Filters</Button>{" "}
                             <Button variant="danger">Reset filters</Button>
