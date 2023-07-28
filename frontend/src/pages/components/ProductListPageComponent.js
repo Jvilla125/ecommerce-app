@@ -24,6 +24,8 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     const [filters, setFilters] = useState({}); // collects all filters
     const [price, setPrice] = useState(500);
     const [ratingsFromFilter, setRatingsFromFilter] = useState({});
+    const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
+
 
     const { categoryName } = useParams() || ""; // name is from App.js :categoryname
 
@@ -61,6 +63,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
         setFilters({
             price: price,
             rating: ratingsFromFilter,
+            category: categoriesFromFilter,
             attrs: attrsFromFilter,
         })
     }
@@ -84,7 +87,9 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                         <ListGroup.Item>
                             <RatingFilterComponent setRatingsFromFilter={setRatingsFromFilter} />
                         </ListGroup.Item>
-                        <ListGroup.Item><CategoryFilterComponent /></ListGroup.Item>
+                        <ListGroup.Item>
+                            <CategoryFilterComponent setCategoriesFromFilter={setCategoriesFromFilter} />
+                        </ListGroup.Item>
                         <ListGroup.Item>
                             <AttributesFilterComponent attrsFilter={attrsFilter}
                                 setAttrsFromFilter={setAttrsFromFilter} />
