@@ -23,6 +23,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     const [showResetFiltersButton, setShowResetFiltersButton] = useState(false);
     const [filters, setFilters] = useState({}); // collects all filters
     const [price, setPrice] = useState(500);
+    const [ratingsFromFilter, setRatingsFromFilter] = useState({});
 
     const { categoryName } = useParams() || ""; // name is from App.js :categoryname
 
@@ -54,10 +55,12 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     }, [filters]);
 
     // if filters button is clicked, then the 'reset filters' button will appear 
+    // handleFilters will push price, attrs, and rating to setFilters and be sent to the database
     const handleFilters = () => {
         setShowResetFiltersButton(true);
         setFilters({
             price: price,
+            rating: ratingsFromFilter,
             attrs: attrsFromFilter,
         })
     }
@@ -78,7 +81,9 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                             FILTER: <br />
                             <PriceFilterComponent price={price} setPrice={setPrice} />
                         </ListGroup.Item>
-                        <ListGroup.Item><RatingFilterComponent /></ListGroup.Item>
+                        <ListGroup.Item>
+                            <RatingFilterComponent setRatingsFromFilter={setRatingsFromFilter} />
+                        </ListGroup.Item>
                         <ListGroup.Item><CategoryFilterComponent /></ListGroup.Item>
                         <ListGroup.Item>
                             <AttributesFilterComponent attrsFilter={attrsFilter}
