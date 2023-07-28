@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 
 // Import /filterQueryResultsOptions/Components
 import PriceFilterComponent from "../../components/filterQueryResultOptions/PriceFilterComponent";
@@ -25,9 +25,12 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     const [price, setPrice] = useState(500);
     const [ratingsFromFilter, setRatingsFromFilter] = useState({});
     const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
-
+    const [sortOption, setSortOption] = useState("");
 
     const { categoryName } = useParams() || ""; // name is from App.js :categoryname
+    const { pageNumParam } = useParams() || "";
+    const { searchQuery } = useParams() || "";
+    const location = useLocation(); // reads the path of current 
 
     // if there is a categoryName in the link
     useEffect(() => {
@@ -44,7 +47,26 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     }, [categoryName, categories])
 
     useEffect(() => {
-        getProducts()
+        if (Object.entries(categoriesFromFilter).length > 0) {
+            setAttrsFilter([]);
+            var cat = [];
+            var count;
+            Object.entries(categoriesFromFilter).forEach(([category, checked]) => {
+                if (checked) {
+                    var name = category.split("/")[0];
+                    cat.push(name);
+                    count = cat.filter((x) => x === name).length;
+                    if (count === 1) {
+                        var index = categories.findIndex((item) => item.name === name);
+                        setAttrsFilter((attrs) => [...attrs, ...categories[index].attrs]);
+                    }
+                }
+            })
+        }
+    }, [categoriesFromFilter, categories])
+
+    useEffect(() => {
+        getProducts(categoryName, pageNumParam, searchQuery, filters, sortOption)
             .then(products => {
                 setProducts(products.products)
                 setLoading(false)
@@ -53,8 +75,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                 console.log(er)
                 setError(true);
             })
-        console.log(filters);
-    }, [filters]);
+    }, [categoryName, pageNumParam, searchQuery, filters, sortOption]);
 
     // if filters button is clicked, then the 'reset filters' button will appear 
     // handleFilters will push price, attrs, and rating to setFilters and be sent to the database
@@ -79,7 +100,9 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
             <Row>
                 <Col md={3}>
                     <ListGroup variant="flush">
-                        <ListGroup.Item className='mb-3 mt-3'><SortOptionsComponent /></ListGroup.Item>
+                        <ListGroup.Item className='mb-3 mt-3'>
+                            <SortOptionsComponent setSortOption={setSortOption} />
+                        </ListGroup.Item>
                         <ListGroup.Item>
                             FILTER: <br />
                             <PriceFilterComponent price={price} setPrice={setPrice} />
@@ -87,9 +110,11 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                         <ListGroup.Item>
                             <RatingFilterComponent setRatingsFromFilter={setRatingsFromFilter} />
                         </ListGroup.Item>
-                        <ListGroup.Item>
-                            <CategoryFilterComponent setCategoriesFromFilter={setCategoriesFromFilter} />
-                        </ListGroup.Item>
+                        {!location.pathname.match(/\/category/) && (
+                            <ListGroup.Item>
+                                <CategoryFilterComponent setCategoriesFromFilter={setCategoriesFromFilter} />
+                            </ListGroup.Item>
+                        )}
                         <ListGroup.Item>
                             <AttributesFilterComponent attrsFilter={attrsFilter}
                                 setAttrsFromFilter={setAttrsFromFilter} />

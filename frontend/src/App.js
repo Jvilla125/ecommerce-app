@@ -50,7 +50,13 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-list/:pageNum" element={<ProductListPage />} />
           <Route path="/product-list/category/:categoryName" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/search/:searchQuery" element={<ProductListPage />} />
+          <Route path="/product-list/search/:searchQuery/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName/search/:searchQuery" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName/search/:searchQuery/:pageNum" element={<ProductListPage />} />
           <Route path="/product-details/:id" element={<ProductDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -65,8 +71,6 @@ function App() {
           <Route path="/user/cart-details" element={<UserCartDetailsPage />} />
           <Route path="/user/order-details/:id" element={<UserOrderDetailsPage />} />
         </Route>
-
-
 
         {/* admin protected routes */}
         {/* pass the admin prop to the ProtectedRoutesComponent */}
