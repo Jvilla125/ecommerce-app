@@ -50,13 +50,13 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product-list" element={<ProductListPage />} />
-          <Route path="/product-list/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/:pageNumParam" element={<ProductListPage />} />
           <Route path="/product-list/category/:categoryName" element={<ProductListPage />} />
-          <Route path="/product-list/category/:categoryName/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName/:pageNumParam" element={<ProductListPage />} />
           <Route path="/product-list/search/:searchQuery" element={<ProductListPage />} />
-          <Route path="/product-list/search/:searchQuery/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/search/:searchQuery/:pageNumParam" element={<ProductListPage />} />
           <Route path="/product-list/category/:categoryName/search/:searchQuery" element={<ProductListPage />} />
-          <Route path="/product-list/category/:categoryName/search/:searchQuery/:pageNum" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName/search/:searchQuery/:pageNumParam" element={<ProductListPage />} />
           <Route path="/product-details/:id" element={<ProductDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
