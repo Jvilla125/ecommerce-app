@@ -40,8 +40,8 @@ import ScrollToTop from './utils/ScrollToTop';
 function App() {
   return (
     <BrowserRouter>
-    {/* Importing ScrollToTop to be included in all of the pages */}
-    <ScrollToTop />
+      {/* Importing ScrollToTop to be included in all of the pages */}
+      <ScrollToTop />
       <HeaderComponent />
       <Routes>
         {/* Creating an component that has all routes inside of it */}
@@ -49,6 +49,7 @@ function App() {
         <Route element={<RoutesWithUserChatComponent />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/product-list" element={<ProductListPage />} />
           <Route path="/product-list/category/:categoryName" element={<ProductListPage />} />
           <Route path="/product-details/:id" element={<ProductDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -76,7 +77,7 @@ function App() {
           <Route path="/admin/create-new-product" element={<AdminCreateProductPage />} />
           <Route path="/admin/edit-product/:id" element={<AdminEditProductPage />} />
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          <Route path="/admin/order-details/:id" element={<AdminOrderDetailsPage />} /> 
+          <Route path="/admin/order-details/:id" element={<AdminOrderDetailsPage />} />
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/chats" element={<AdminChatsPage />} />
         </Route>

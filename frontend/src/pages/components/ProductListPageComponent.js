@@ -18,10 +18,11 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [attrsFilter, setAttrsFilter] = useState([]);
-    const [attrsFromFilter, setAttrsFromFilter] = useState([]); // pass a prop to AttributesFilterComponent.js
-
-    console.log(attrsFromFilter)
+    const [attrsFilter, setAttrsFilter] = useState([]); // collect category attributes from db and display on webpage
+    const [attrsFromFilter, setAttrsFromFilter] = useState([]); // collect user filters for category attributes
+    const [showResetFiltersButton, setShowResetFiltersButton] = useState(false);
+    const [filters, setFilters] = useState({}); // collects all filters
+    const [price, setPrice] = useState(500);
 
     const { categoryName } = useParams() || ""; // name is from App.js :categoryname
 
@@ -49,7 +50,23 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                 console.log(er)
                 setError(true);
             })
-    }, [])
+        console.log(filters);
+    }, [filters]);
+
+    // if filters button is clicked, then the 'reset filters' button will appear 
+    const handleFilters = () => {
+        setShowResetFiltersButton(true);
+        setFilters({
+            price: price,
+            attrs: attrsFromFilter,
+        })
+    }
+
+    const resetFilters = () => {
+        setShowResetFiltersButton(false);
+        setFilters({});
+        window.location.href = "/product-list"; // redirects user to same page without filters
+    }
 
     return (
         <Container fluid>
@@ -57,7 +74,10 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                 <Col md={3}>
                     <ListGroup variant="flush">
                         <ListGroup.Item className='mb-3 mt-3'><SortOptionsComponent /></ListGroup.Item>
-                        <ListGroup.Item> FILTER: <br /> <PriceFilterComponent /></ListGroup.Item>
+                        <ListGroup.Item>
+                            FILTER: <br />
+                            <PriceFilterComponent price={price} setPrice={setPrice} />
+                        </ListGroup.Item>
                         <ListGroup.Item><RatingFilterComponent /></ListGroup.Item>
                         <ListGroup.Item><CategoryFilterComponent /></ListGroup.Item>
                         <ListGroup.Item>
@@ -65,8 +85,10 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                                 setAttrsFromFilter={setAttrsFromFilter} />
                         </ListGroup.Item>
                         <ListGroup.Item>
-                            <Button variant="primary">Filters</Button>{" "}
-                            <Button variant="danger">Reset filters</Button>
+                            <Button variant="primary" onClick={handleFilters}>Filters</Button>{" "}
+                            {showResetFiltersButton && (
+                                <Button onClick={resetFilters} variant="danger">Reset filters</Button>
+                            )}
                         </ListGroup.Item>
                     </ListGroup>
                 </Col>
