@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Container, ListGroup, Button } from "react-bootstrap";
-import { useParams, useLocation } from "react-router-dom"
+import { useParams, useLocation, useNavigate } from "react-router-dom"
 
 // Import /filterQueryResultsOptions/Components
 import PriceFilterComponent from "../../components/filterQueryResultOptions/PriceFilterComponent";
@@ -26,11 +26,14 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     const [ratingsFromFilter, setRatingsFromFilter] = useState({});
     const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
     const [sortOption, setSortOption] = useState("");
+    const [paginationLinksNumber, setPaginationLinksNumber] = useState(null);
+    const [pageNum, setPageNum] = useState(null);
 
     const { categoryName } = useParams() || ""; // name is from App.js :categoryname
-    const { pageNumParam } = useParams() || "";
+    const { pageNumParam } = useParams() || 1;
     const { searchQuery } = useParams() || "";
     const location = useLocation(); // reads the path of current 
+    const navigate = useNavigate();
 
     // if there is a categoryName in the link
     useEffect(() => {
@@ -68,7 +71,9 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     useEffect(() => {
         getProducts(categoryName, pageNumParam, searchQuery, filters, sortOption)
             .then(products => {
-                setProducts(products.products)
+                setProducts(products.products);
+                setPaginationLinksNumber(products.paginationLinksNumber)
+                setPageNum(products.pageNum)
                 setLoading(false)
             })
             .catch((er) => {
@@ -80,6 +85,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     // if filters button is clicked, then the 'reset filters' button will appear 
     // handleFilters will push price, attrs, and rating to setFilters and be sent to the database
     const handleFilters = () => {
+        navigate(location.pathname.replace(/\/[0-9]+$/, ""))
         setShowResetFiltersButton(true);
         setFilters({
             price: price,
@@ -146,7 +152,14 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
                             />
                         ))
                     )}
-                    <PaginationComponent />
+                    {paginationLinksNumber > 1 ? (
+                        <PaginationComponent 
+                        categoryName={categoryName}
+                        searchQuery={searchQuery}
+                        paginationLinksNumber={paginationLinksNumber}
+                        pageNum={pageNum}
+                        />
+                    ) : null}
                 </Col>
             </Row>
         </Container>
