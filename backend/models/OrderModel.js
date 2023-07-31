@@ -57,5 +57,11 @@ const orderSchema = mongoose.Schema({
 })
 
 const Order = mongoose.model("Order", orderSchema);
-
+// App is listening for on change event on the orders collection, this handler will be executed
+Order.watch().on("change", (data) => {
+    console.log(data);
+    if (data.operationType === "insert") {
+        io.emit("newOrder", data.fullDocument);
+    }
+})
 module.exports = Order;

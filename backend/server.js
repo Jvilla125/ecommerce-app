@@ -1,8 +1,13 @@
+const { createServer } = require("http");
+const { Server } = require("socket.io") // used npm i socket.io for backend and socket.io-client for frontend
 const express = require('express')
 const fileUpload = require("express-fileupload") // used npm i express-fileupload in order to upload file images
 const cookieParser = require('cookie-parser') // used npm install cookie-parser 
 const app = express();
-const port = 5000;
+
+const httpServer = createServer(app);
+global.io = new Server(httpServer);
+
 
 app.use(express.json())
 app.use(cookieParser()) // used cookie-parser as a middleware 
@@ -45,6 +50,6 @@ app.use((error, req, res, next) => {
     }
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+const PORT = process.env.PORT || 5000;
+
+httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`))
