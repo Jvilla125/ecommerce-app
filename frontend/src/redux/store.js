@@ -8,12 +8,14 @@ import thunk from "redux-thunk";
 import { cartReducer } from './reducers/cartReducers'
 import { userRegisterLoginReducer } from "./reducers/userReducers";
 import { getCategoriesReducer } from "./reducers/categoryReducer";
+import { adminChatReducer } from "./reducers/adminChatReducer";
 
 // combineReducers allows you to return various reducers instead of one
 const reducer = combineReducers({
     cart: cartReducer,
     userRegisterLogin: userRegisterLoginReducer,
     getCategories: getCategoriesReducer,
+    adminChat: adminChatReducer,
 })
 
 const cartItemsInLocalStorage = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];

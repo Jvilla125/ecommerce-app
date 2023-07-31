@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../redux/actions/userActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategories } from '../redux/actions/categoryActions';
+import socketIOClient from "socket.io-client";
+import { setChatRooms } from '../redux/actions/chatActions';
 
 const HeaderComponent = () => {
     const dispatch = useDispatch();
@@ -38,6 +40,16 @@ const HeaderComponent = () => {
             navigate("/product-list");
         }
     }
+
+    // Admin will receive messages that are being sent from the client
+    useEffect(() => {
+        if (userInfo.isAdmin){
+            const socket = socketIOClient();
+            socket.on("server sends message from client to admin", ({message}) => {
+                dispatch(setChatRooms("exampleUser", message));
+            })
+        }
+    }, [userInfo.isAdmin])
 
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">

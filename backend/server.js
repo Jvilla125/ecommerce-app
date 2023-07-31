@@ -15,7 +15,9 @@ app.use(fileUpload()) // used npm i express-fileupload in order to upload file i
 
 io.on("connection", (socket) => {
     socket.on("client sends message", (msg) => {
-        console.log(msg);
+        socket.broadcast.emit("server sends message from client to admin",  {
+            message: msg, 
+        })
     })
 })
 const apiRoutes = require('./routes/apiRoutes');
