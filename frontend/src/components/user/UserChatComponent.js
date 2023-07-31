@@ -1,71 +1,90 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import '../../chats.css'
 import socketIOClient from "socket.io-client";
 
 const UserChatComponent = () => {
 
     const [socket, setSocket] = useState(false);
+    const [chat, setChat] = useState([]);
+
+    const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
     useEffect(() => {
-        const socket = socketIOClient();
-        setSocket(socket);
-        return () => socket.disconnect();
-    }, [])
+        if (!userInfo.isAdmin) {
+            const socket = socketIOClient();
+            setSocket(socket);
+            return () => socket.disconnect();
+        }
+    }, [userInfo.isAdmin]);
 
     const clientSubmitChatMsg = (e) => {
-        if(e.keyCode && e.keyCode !== 13){
-            return
+        if (e.keyCode && e.keyCode !== 13) {
+            return;
         }
-        socket.emit("client sends message", "message from client")
-    }
+        const msg = document.getElementById("clientChatMsg");
+        let v = msg.value.trim();
+        if (v === "" || v === null || v === false || !v) {
+            return;
+        }
+        socket.emit("client sends message", v);
+        setChat((chat) => {
+            return [...chat, { client: v }];
+        });
+        msg.focus();
+        setTimeout(() => {
+            msg.value = "";
+            const chatMessages = document.querySelector(".cht-msg");
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 200)
+    };
 
-    return (
+    return !userInfo.isAdmin ? (
         <>
             <input type="checkbox" id="check" />
-            {/* htmlFor uses the id='check' to group the icons together */}
-            <label className='chat-btn' htmlFor='check'>
+            <label className="chat-btn" htmlFor="check">
                 <i className="bi bi-chat-dots comment"></i>
-                {/* notification circle above chat box */}
-                <span className='position-absolute top-0 start-10 translate-middle
-                p-2 bg-danger border border-light rounded-circle'></span>
+                <span className="position-absolute top-0 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
                 <i className="bi bi-x-circle close"></i>
             </label>
-            <div className='chat-wrapper'>
-                <div className='chat-header'>
+            <div className="chat-wrapper">
+                <div className="chat-header">
                     <h6>Let's Chat - Online</h6>
                 </div>
-                <div className='chat-form'>
-                    <div className='chat-msg'>
-                        {
-                            Array.from({ length: 20 }).map((_, id,) => (
-                                <div key={id}>
+                <div className="chat-form">
+                    <div className="cht-msg">
+                        {chat.map((item, id) => (
+                            <div key={id}>
+                                {item.client && (
                                     <p>
-                                        <b>You wrote: </b> Hello, world! This is a toast message.
+                                        <b>You wrote:</b> {item.client}
                                     </p>
-                                    <p className='bg-primary p-3 ms-4 text-light rounded-pill'>
-                                        <b>Support wrote: </b> Hello, world! This is a sample response.
+                                )}
+                                {item.admin && (
+                                    <p className="bg-primary p-3 ms-4 text-light rounded-pill">
+                                        <b>Support wrote:</b> {item.admin}
                                     </p>
-                                </div>
-
-                            ))
-                        }
+                                )}
+                            </div>
+                        ))}
                     </div>
                     <textarea
-                    onKeyUp={(e) => clientSubmitChatMsg(e)}
-                        id='clientChatMsg'
-                        className='form-control'
-                        placeholder='Your text Message'
+                        onKeyUp={(e) => clientSubmitChatMsg(e)}
+                        id="clientChatMsg"
+                        className="form-control"
+                        placeholder="Your Text Message"
                     ></textarea>
-                    <button 
-                    onClick={(e) => clientSubmitChatMsg(e)}
-                    className='btn btn-success btn-block'>
+
+                    <button
+                        onClick={(e) => clientSubmitChatMsg(e)}
+                        className="btn btn-success btn-block"
+                    >
                         Submit
                     </button>
                 </div>
             </div>
         </>
-    )
-}
-
+    ) : null;
+};
 export default UserChatComponent;
 

@@ -1,4 +1,4 @@
-.chat-btn{
+.chat-btn {
     position: fixed;
     right: 14px;
     bottom: 30px;
@@ -12,32 +12,30 @@
     z-index: 2;
     display: flex;
     justify-content: center;
-    align-items: center;    
+    align-items: center;
 }
 
-.chat-btn .close{
+.chat-btn .close {
     display: none;
 }
 
-#check:checked ~ .chat-btn i {
+#check:checked~.chat-btn i {
     display: block;
-
 }
 
-#check:checked ~ .chat-btn .comment {
+#check:checked~.chat-btn .comment {
     display: none;
-    
 }
 
-#check{
+#check {
     display: none !important;
 }
 
-#check:checked ~ .chat-wrapper{
+#check:checked~.chat-wrapper {
     opacity: 1;
 }
 
-.chat-wrapper{
+.chat-wrapper {
     opacity: 0;
     position: fixed;
     right: 20px;
@@ -49,33 +47,34 @@
     border-radius: 5px;
 }
 
-.chat-header{
+.chat-header {
     background-color: blue;
     padding: 13px;
     margin-bottom: 10px;
-    border-radius:  5px 5px 0px 0px;
-    color: #fff
+    border-radius: 5px 5px 0px 0px;
+    color: #fff;
 }
 
-.chat-form{
+.chat-form {
     padding: 15px;
 }
-.chat-form input, 
-.chat-form textarea, 
-.chat-form button{
+
+.chat-form input,
+.chat-form textarea,
+.chat-form button {
     margin-bottom: 10px;
 }
 
-.chat-form textarea{
+.chat-form textarea {
     resize: none;
 }
 
-.form-control:focus, 
-.btn:focus{
+.form-control:focus,
+.btn:focus {
     box-shadow: none;
 }
 
-.chat-msg{
+.cht-msg {
     max-height: 300px;
     overflow: auto;
 }
