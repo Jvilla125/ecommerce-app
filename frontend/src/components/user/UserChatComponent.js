@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../chats.css'
+import socketIOClient from "socket.io-client";
 
 const UserChatComponent = () => {
+
+    const [socket, setSocket] = useState(false);
+
+    useEffect(() => {
+        const socket = socketIOClient();
+        setSocket(socket);
+        return () => socket.disconnect();
+    }, [])
+
+    const clientSubmitChatMsg = (e) => {
+        if(e.keyCode && e.keyCode !== 13){
+            return
+        }
+        socket.emit("client sends message", "message from client")
+    }
+
     return (
         <>
             <input type="checkbox" id="check" />
@@ -29,16 +46,19 @@ const UserChatComponent = () => {
                                         <b>Support wrote: </b> Hello, world! This is a sample response.
                                     </p>
                                 </div>
-                                
+
                             ))
                         }
                     </div>
                     <textarea
+                    onKeyUp={(e) => clientSubmitChatMsg(e)}
                         id='clientChatMsg'
                         className='form-control'
                         placeholder='Your text Message'
                     ></textarea>
-                    <button className='btn btn-success btn-block'>
+                    <button 
+                    onClick={(e) => clientSubmitChatMsg(e)}
+                    className='btn btn-success btn-block'>
                         Submit
                     </button>
                 </div>

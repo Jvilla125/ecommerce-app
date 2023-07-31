@@ -13,6 +13,11 @@ app.use(express.json())
 app.use(cookieParser()) // used cookie-parser as a middleware 
 app.use(fileUpload()) // used npm i express-fileupload in order to upload file images
 
+io.on("connection", (socket) => {
+    socket.on("client sends message", (msg) => {
+        console.log(msg);
+    })
+})
 const apiRoutes = require('./routes/apiRoutes');
 
 // mongodb connection
