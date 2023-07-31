@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownButton, Button, InputGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
@@ -12,6 +12,9 @@ const HeaderComponent = () => {
     const { userInfo } = useSelector((state) => state.userRegisterLogin);
     // get itemsCount from redux global state
     const itemsCount = useSelector((state) => state.cart.itemsCount);
+    const { categories } = useSelector((state) => state.getCategories)
+
+    const [searchCategoryToggle, setSearchCategoryToggle] = useState("All");
 
     useEffect(() => {
         dispatch(getCategories());
@@ -28,10 +31,11 @@ const HeaderComponent = () => {
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
                         <InputGroup>
-                            <DropdownButton id="dropdown-basic-button" title="All">
-                                <Dropdown.Item >Electronics</Dropdown.Item>
-                                <Dropdown.Item >Cars</Dropdown.Item>
-                                <Dropdown.Item >Books</Dropdown.Item>
+                            <DropdownButton id="dropdown-basic-button" title={searchCategoryToggle}>
+                                <Dropdown.Item onClick={() => setSearchCategoryToggle("All")}>All</Dropdown.Item>
+                                {categories.map((category, id) => (
+                                    <Dropdown.Item key={id} onClick={() => setSearchCategoryToggle(category.name)}>{category.name}</Dropdown.Item>
+                                ))}
                             </DropdownButton>
                             <Form.Control type="text" placeholder="Search in shop ..." />
                             <Button variant="warning">
