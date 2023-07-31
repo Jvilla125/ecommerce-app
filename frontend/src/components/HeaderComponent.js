@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge, Form, Dropdown, DropdownButton, Button, InputGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../redux/actions/userActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategories } from '../redux/actions/categoryActions';
@@ -15,10 +15,29 @@ const HeaderComponent = () => {
     const { categories } = useSelector((state) => state.getCategories)
 
     const [searchCategoryToggle, setSearchCategoryToggle] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(getCategories());
     }, [dispatch])
+
+    const submitHandler = (e) => {
+        if (e.keyCode && e.keyCode !== 13) return;
+        e.preventDefault();
+        if (searchQuery.trim()) { // trim removes space from the left and write of text
+            if (searchCategoryToggle === "All") {
+                navigate(`/product-list/search/${searchQuery}`);
+            } else {
+                navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}/search/${searchQuery}}`)
+            }
+        } else if (searchCategoryToggle !== "All") {
+            navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}`)
+        } else {
+            navigate("/product-list");
+        }
+    }
 
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
@@ -37,8 +56,10 @@ const HeaderComponent = () => {
                                     <Dropdown.Item key={id} onClick={() => setSearchCategoryToggle(category.name)}>{category.name}</Dropdown.Item>
                                 ))}
                             </DropdownButton>
-                            <Form.Control type="text" placeholder="Search in shop ..." />
-                            <Button variant="warning">
+                            <Form.Control onKeyUp={submitHandler}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                type="text" placeholder="Search in shop ..." />
+                            <Button onClick={submitHandler} variant="warning">
                                 <i className="bi bi-search text-dark"></i>
                             </Button>
                         </InputGroup>
