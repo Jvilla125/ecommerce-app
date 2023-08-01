@@ -6,7 +6,7 @@ import { logout } from '../redux/actions/userActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategories } from '../redux/actions/categoryActions';
 import socketIOClient from "socket.io-client";
-import { setChatRooms, setSocket, setMessageReceived } from '../redux/actions/chatActions';
+import { setChatRooms, setSocket, setMessageReceived, removeChatRoom } from '../redux/actions/chatActions';
 
 const HeaderComponent = () => {
     const dispatch = useDispatch();
@@ -44,7 +44,7 @@ const HeaderComponent = () => {
         if (userInfo.isAdmin) {
             var audio = new Audio("/audio/chat-msg.mp3");
             const socket = socketIOClient();
-            socket.emit("admin connected with server", "Admin" + Math.floor(Math.random() * 1000000000000))
+            socket.emit("admin connected with server", "Admin" + Math.floor(Math.random() * 1000000000000));
             socket.on("server sends message from client to admin", ({ user, message }) => {
                 dispatch(setSocket(socket));
                 //   let chatRooms = {
@@ -54,10 +54,13 @@ const HeaderComponent = () => {
                 dispatch(setMessageReceived(true));
                 audio.play();
             })
+            socket.on("disconnected", ({ reason, socketId }) => {
+                //   console.log(socketId, reason)
+                dispatch(removeChatRoom(socketId));
+            })
             return () => socket.disconnect();
         }
     }, [userInfo.isAdmin])
-
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Container>
