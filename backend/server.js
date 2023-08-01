@@ -14,24 +14,37 @@ app.use(cookieParser()) // used cookie-parser as a middleware
 app.use(fileUpload()) // used npm i express-fileupload in order to upload file images
 
 const admins = [];
+let activeChats = [];
+function get_random(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
 
 io.on("connection", (socket) => {
     socket.on("admin connected with server", (adminName) => {
         admins.push({ id: socket.id, admin: adminName })
-        console.log(admins)
     })
     socket.on("client sends message", (msg) => {
         if (admins.length === 0) {
             socket.emit("no admin", "")
         } else {
-            socket.broadcast.emit("server sends message from client to admin", {
+            let client = activeChats.find((client) => client.clientId === socket.id);
+            let targetAdminId;
+            if (client) {
+                targetAdminId = client.adminId;
+            } else {
+                let admin = get_random(admins);
+                activeChats.push({ clientId: socket.id, adminId: admin.id });
+                targetAdminId = admin.id;
+            }
+            socket.broadcast.to(targetAdminId).emit("server sends message from client to admin", {
+                user: socket.id, 
                 message: msg,
             })
         }
     })
 
-    socket.on("admin sends message", ({ message }) => {
-        socket.broadcast.emit("server sends message from admin to client", message);
+    socket.on("admin sends message", ({ user, message }) => {
+        socket.broadcast.to(user).emit("server sends message from admin to client", message);
     })
     socket.on("disconnect", (reason) => {
         // admin disconnected 
