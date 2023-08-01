@@ -13,15 +13,32 @@ app.use(express.json())
 app.use(cookieParser()) // used cookie-parser as a middleware 
 app.use(fileUpload()) // used npm i express-fileupload in order to upload file images
 
+const admins = [];
+
 io.on("connection", (socket) => {
+    socket.on("admin connected with server", (adminName) => {
+        admins.push({ id: socket.id, admin: adminName })
+        console.log(admins)
+    })
     socket.on("client sends message", (msg) => {
-        socket.broadcast.emit("server sends message from client to admin", {
-            message: msg,
-        })
+        if (admins.length === 0) {
+            socket.emit("no admin", "")
+        } else {
+            socket.broadcast.emit("server sends message from client to admin", {
+                message: msg,
+            })
+        }
     })
 
     socket.on("admin sends message", ({ message }) => {
         socket.broadcast.emit("server sends message from admin to client", message);
+    })
+    socket.on("disconnect", (reason) => {
+        // admin disconnected 
+        const removeIndex = admins.findIndex((item) => item.id === socket.id);
+        if (removeIndex !== -1) {
+            admins.splice(removeIndex, 1);
+        }
     })
 })
 
