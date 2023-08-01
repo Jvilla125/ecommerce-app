@@ -15,11 +15,16 @@ app.use(fileUpload()) // used npm i express-fileupload in order to upload file i
 
 io.on("connection", (socket) => {
     socket.on("client sends message", (msg) => {
-        socket.broadcast.emit("server sends message from client to admin",  {
-            message: msg, 
+        socket.broadcast.emit("server sends message from client to admin", {
+            message: msg,
         })
     })
+
+    socket.on("admin sends message", ({ message }) => {
+        socket.broadcast.emit("server sends message from admin to client", message);
+    })
 })
+
 const apiRoutes = require('./routes/apiRoutes');
 
 // mongodb connection

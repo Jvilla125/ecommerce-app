@@ -14,30 +14,37 @@ const UserChatComponent = () => {
         if (!userInfo.isAdmin) {
             const socket = socketIOClient();
             setSocket(socket);
+            socket.on("server sends message from admin to client", (msg) => {
+                setChat((chat) => {
+                    return [...chat, { admin: msg }];
+                })
+                const chatMessages = document.querySelector(".cht-msg");
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
             return () => socket.disconnect();
         }
     }, [userInfo.isAdmin]);
 
     const clientSubmitChatMsg = (e) => {
         if (e.keyCode && e.keyCode !== 13) {
-            return;
+          return;
         }
         const msg = document.getElementById("clientChatMsg");
         let v = msg.value.trim();
         if (v === "" || v === null || v === false || !v) {
-            return;
+          return;
         }
         socket.emit("client sends message", v);
         setChat((chat) => {
-            return [...chat, { client: v }];
+          return [...chat, { client: v }];
         });
         msg.focus();
         setTimeout(() => {
-            msg.value = "";
-            const chatMessages = document.querySelector(".cht-msg");
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+             msg.value = "";
+             const chatMessages = document.querySelector(".cht-msg");
+             chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 200)
-    };
+      };
 
     return !userInfo.isAdmin ? (
         <>

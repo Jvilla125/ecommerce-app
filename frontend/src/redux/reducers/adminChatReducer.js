@@ -1,6 +1,7 @@
 import * as actionTypes from "../constants/chatConstants";
 
 const CHAT_INITIAL_STATE = {
+    socket: false,
     chatRooms: {},
 }
 
@@ -14,13 +15,19 @@ export const adminChatReducer = (state = CHAT_INITIAL_STATE, action) => {
                     ...state,
                     chatRooms: { ...currentState.chatRooms },
                 }
+
             } else {
                 return {
                     ...state,
                     chatRooms: { ...currentState.chatRooms, [action.payload.user]: [{ client: action.payload.message }] },
                 }
             }
+        case actionTypes.SET_SOCKET:
+            return {
+                ...state,
+                socket: action.payload.socket,
+            }
         default:
-        return state;
+            return state;
     }
 }
