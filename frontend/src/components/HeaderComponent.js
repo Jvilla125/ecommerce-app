@@ -6,42 +6,40 @@ import { logout } from '../redux/actions/userActions';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategories } from '../redux/actions/categoryActions';
 import socketIOClient from "socket.io-client";
-import { setChatRooms, setSocket } from '../redux/actions/chatActions';
+import { setChatRooms, setSocket, setMessageReceived } from '../redux/actions/chatActions';
 
 const HeaderComponent = () => {
     const dispatch = useDispatch();
-    // get userInfo from store.js reducer object
     const { userInfo } = useSelector((state) => state.userRegisterLogin);
-    // get itemsCount from redux global state
     const itemsCount = useSelector((state) => state.cart.itemsCount);
-    const { categories } = useSelector((state) => state.getCategories)
+    const { categories } = useSelector((state) => state.getCategories);
+    const { messageReceived } = useSelector((state) => state.adminChat);
 
     const [searchCategoryToggle, setSearchCategoryToggle] = useState("All");
-    const [searchQuery, setSearchQuery] = useState("")
+    const [searchQuery, setSearchQuery] = useState("");
 
     const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(getCategories());
-    }, [dispatch])
+    }, [dispatch]);
 
     const submitHandler = (e) => {
         if (e.keyCode && e.keyCode !== 13) return;
         e.preventDefault();
-        if (searchQuery.trim()) { // trim removes space from the left and write of text
+        if (searchQuery.trim()) {
             if (searchCategoryToggle === "All") {
                 navigate(`/product-list/search/${searchQuery}`);
             } else {
-                navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}/search/${searchQuery}}`)
+                navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}/search/${searchQuery}`);
             }
         } else if (searchCategoryToggle !== "All") {
-            navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}`)
+            navigate(`/product-list/category/${searchCategoryToggle.replaceAll("/", ",")}`);
         } else {
             navigate("/product-list");
         }
     }
 
-    // Admin will receive messages that are being sent from the client
     useEffect(() => {
         if (userInfo.isAdmin) {
             const socket = socketIOClient();
@@ -51,16 +49,16 @@ const HeaderComponent = () => {
                 //     fddf54gfgfSocketID: [{ "client": "dsfdf" }, { "client": "dsfdf" }, { "admin": "dsfdf" }],
                 //   };
                 dispatch(setChatRooms("exampleUser", message));
+                dispatch(setMessageReceived(true));
             })
         }
     }, [userInfo.isAdmin])
 
     return (
-        <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Container>
-                {/* Link container allows user to go to link without reloading the page */}
                 <LinkContainer to="/">
-                    <Navbar.Brand href="/">Best Online Shop</Navbar.Brand>
+                    <Navbar.Brand href="/">BEST ONLINE SHOP</Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
@@ -72,9 +70,7 @@ const HeaderComponent = () => {
                                     <Dropdown.Item key={id} onClick={() => setSearchCategoryToggle(category.name)}>{category.name}</Dropdown.Item>
                                 ))}
                             </DropdownButton>
-                            <Form.Control onKeyUp={submitHandler}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                type="text" placeholder="Search in shop ..." />
+                            <Form.Control onKeyUp={submitHandler} onChange={(e) => setSearchQuery(e.target.value)} type="text" placeholder="Search in shop ..." />
                             <Button onClick={submitHandler} variant="warning">
                                 <i className="bi bi-search text-dark"></i>
                             </Button>
@@ -83,9 +79,10 @@ const HeaderComponent = () => {
                     <Nav>
                         {userInfo.isAdmin ? (
                             <LinkContainer to="/admin/orders">
-                                <Nav.Link >Admin
-                                    {/* the span will notify the user if there is a chat available */}
-                                    <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                                <Nav.Link>
+                                    Admin
+                                    {messageReceived && <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>}
+
                                 </Nav.Link>
                             </LinkContainer>
                         ) : userInfo.name && !userInfo.isAdmin ? (
@@ -117,21 +114,21 @@ const HeaderComponent = () => {
                                 </LinkContainer>
                             </>
                         )}
+
                         <LinkContainer to="/cart">
-                            <Nav.Link >
-                                <Badge bg="danger">
+                            <Nav.Link>
+                                <Badge pill bg="danger">
                                     {itemsCount === 0 ? "" : itemsCount}
                                 </Badge>
                                 <i className="bi bi-cart-dash"></i>
-                                <span className='ms-1'> Cart </span>
+                                <span className="ms-1">CART</span>
                             </Nav.Link>
                         </LinkContainer>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
-
-    )
-}
+    );
+};
 
 export default HeaderComponent;

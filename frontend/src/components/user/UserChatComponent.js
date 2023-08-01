@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import '../../chats.css'
 import socketIOClient from "socket.io-client";
-
 const UserChatComponent = () => {
-
     const [socket, setSocket] = useState(false);
+    //   let chat = [
+    //       {"client": "msg"},
+    //       {"client": "msg"},
+    //       {"admin": "msg"},
+    //   ]
     const [chat, setChat] = useState([]);
+    const [messageReceived, setMessageReceived] = useState(false);
 
     const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
@@ -18,6 +22,7 @@ const UserChatComponent = () => {
                 setChat((chat) => {
                     return [...chat, { admin: msg }];
                 })
+                setMessageReceived(true);
                 const chatMessages = document.querySelector(".cht-msg");
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             })
@@ -27,31 +32,33 @@ const UserChatComponent = () => {
 
     const clientSubmitChatMsg = (e) => {
         if (e.keyCode && e.keyCode !== 13) {
-          return;
+            return;
         }
+        setMessageReceived(false);
         const msg = document.getElementById("clientChatMsg");
         let v = msg.value.trim();
         if (v === "" || v === null || v === false || !v) {
-          return;
+            return;
         }
         socket.emit("client sends message", v);
         setChat((chat) => {
-          return [...chat, { client: v }];
+            return [...chat, { client: v }];
         });
         msg.focus();
         setTimeout(() => {
-             msg.value = "";
-             const chatMessages = document.querySelector(".cht-msg");
-             chatMessages.scrollTop = chatMessages.scrollHeight;
+            msg.value = "";
+            const chatMessages = document.querySelector(".cht-msg");
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 200)
-      };
+    };
 
     return !userInfo.isAdmin ? (
         <>
             <input type="checkbox" id="check" />
             <label className="chat-btn" htmlFor="check">
                 <i className="bi bi-chat-dots comment"></i>
-                <span className="position-absolute top-0 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                {messageReceived && <span className="position-absolute top-0 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>}
+
                 <i className="bi bi-x-circle close"></i>
             </label>
             <div className="chat-wrapper">
@@ -93,5 +100,5 @@ const UserChatComponent = () => {
         </>
     ) : null;
 };
-export default UserChatComponent;
 
+export default UserChatComponent;

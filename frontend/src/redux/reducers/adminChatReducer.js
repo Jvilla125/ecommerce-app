@@ -27,6 +27,11 @@ export const adminChatReducer = (state = CHAT_INITIAL_STATE, action) => {
                 ...state,
                 socket: action.payload.socket,
             }
+        case actionTypes.MESSAGE_RECEIVED:
+            return {
+                ...state,
+                messageReceived: action.payload.value,
+            }
         default:
             return state;
     }

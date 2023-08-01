@@ -1,15 +1,19 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Toast, Form, Button } from 'react-bootstrap';
+import { setMessageReceived } from '../../redux/actions/chatActions';
+import { useDispatch } from 'react-redux';
 
 const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => {
 
-    [window["toast" + roomIndex], window["closeToast" + roomIndex]] = useState(true);
+    const dispatch = useDispatch();
 
+    [window["toast" + roomIndex], window["closeToast" + roomIndex]] =
+        useState(true);
     const [rerender, setRerender] = useState(false);
 
     const close = () => {
         window["closeToast" + roomIndex](false);
-    }
+    };
 
     const adminSubmitChatMsg = (e, elem) => {
         e.preventDefault();
@@ -27,6 +31,7 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
         })
         setRerender(!rerender);
         msg.focus();
+        dispatch(setMessageReceived(false));
         setTimeout(() => {
             msg.value = "";
             const chatMessages = document.querySelector(`.cht-msg${socketUser}`);
@@ -41,16 +46,23 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
 
     return (
         <>
-            <Toast show={window["toast" + roomIndex]} onClose={() => close()} className='ms-4 mb-5'>
+            <Toast
+                show={window["toast" + roomIndex]}
+                onClose={() => close()}
+                className="ms-4 mb-5"
+            >
                 <Toast.Header>
-                    <strong className='me-auto'>Chat with User</strong>
+                    <strong className="me-auto">Chat with User</strong>
                 </Toast.Header>
                 <Toast.Body>
                     <div className={`cht-msg${socketUser}`} style={{ maxHeight: "500px", overflow: "auto" }}>
                         {chatRoom[1].map((msg, idx) => (
                             <Fragment key={idx}>
                                 {msg.client && (
-                                    <p key={idx} className='bg-primary p-3 ms-4 text-light rounded-pill'>
+                                    <p
+                                        key={idx}
+                                        className="bg-primary p-3 ms-4 text-light rounded-pill"
+                                    >
                                         <b>User wrote:</b> {msg.client}
                                     </p>
                                 )}
@@ -62,21 +74,23 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
                             </Fragment>
                         ))}
                     </div>
+
                     <Form>
-                        <Form.Group className='mb-3' controlId={`adminChatMsg${roomIndex}`}>
+                        <Form.Group
+                            className="mb-3"
+                            controlId={`adminChatMsg${roomIndex}`}
+                        >
                             <Form.Label>Write a message</Form.Label>
-                            <Form.Control
-                                onKeyUp={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)}
-                                as="textarea" rows={2} />
+                            <Form.Control onKeyUp={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)} as="textarea" rows={2} />
                         </Form.Group>
-                        <Button
-                            onClick={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)}
-                            variant="success" type="submit">Submit</Button>
+                        <Button onClick={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)} variant="success" type="submit">
+                            Submit
+                        </Button>
                     </Form>
                 </Toast.Body>
             </Toast>
         </>
-    )
+    );
 };
 
 export default AdminChatRoomComponent;
