@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Row, Container } from "react-bootstrap"
 import ProductCarouselComponent from '../../components/ProductCarouselComponent';
 import CategoryCardComponent from '../../components/CategoryCardComponent';
+import MetaComponent from '../../components/MetaComponent';
 
 const HomePageComponent = ({ categories, getBestSellers }) => {
     const [mainCategories, setMainCategories] = useState([]);
@@ -18,6 +19,7 @@ const HomePageComponent = ({ categories, getBestSellers }) => {
 
     return (
         <>
+        <MetaComponent />
             <ProductCarouselComponent bestSellers={bestSellers}/>
             <Container>
                 <Row xs={1} md={2} className="g-4 mt-5" >
