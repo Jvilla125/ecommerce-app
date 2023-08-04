@@ -34,7 +34,8 @@ const LoginPageComponent = ({ loginUserApiRequest, reduxDispatch, setReduxUserSt
                     }
 
                     // if user !isAdmin then navigate to user page
-                    if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) window.location.assign('/user')
+                    if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) 
+                    window.location.assign('/user')
                     else window.location.assign('/admin/orders')
                 })// replace true means react deletes history of switching pages(can press back to login)
                 .catch((er) =>
